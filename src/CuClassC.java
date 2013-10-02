@@ -18,4 +18,8 @@ public abstract class CuClassC {
 		// TODO Auto-generated method stub
 		
 	}
+	public void finish(String id) {
+		// TODO Auto-generated method stub
+		
+	}
 }

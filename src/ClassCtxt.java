@@ -28,7 +28,9 @@ public class ClassCtxt extends CuClassC {
 	}
 	
 	@Override public void add (CuType t) {
+		//I think it is ok to mix it here
 		curCls.add(t);
+		curIntf.add(t);
 		this.t = t;
 		text += " " +t.toString();
 	}
@@ -41,14 +43,13 @@ public class ClassCtxt extends CuClassC {
 	}
 	
 	//add the current object
-	public void finish (String id) {
+	@Override public void finish (String id) {
 		if (id == "interface") {
 			intfCtxt.add(curIntf);
 		}
-		else if (id == "class") {
+		else {
 			clsCtxt.add(curCls);
 		}
-		
 	}
 	
 }
