@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Intf extends CuInterface{
+public class Intf extends CuClass{
 	private String intf_name;
 	private String funs = "";
 	private List<String> kc_name;

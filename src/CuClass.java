@@ -22,5 +22,9 @@ public abstract class CuClass {
 		// TODO Auto-generated method stub
 		
 	}
+	public void add(String v_name, CuTypeScheme ts) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
