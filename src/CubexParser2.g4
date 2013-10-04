@@ -145,7 +145,7 @@ intf returns [CuInterface i]
 
 cls returns [CuClass c]
 
-	: CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.text, $pk.kc, $pt.tc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN v=vv ts=typescheme s=stat {$c.add($v.v, $ts.ts, $s.s);})* RBRACE)?;
+	: CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.text, $pk.kc, $pt.tc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN vs=vv ts=typescheme s=stat {$c.add($vs.v, $ts.ts, $s.s);})* RBRACE)?;
 
 program returns [CuProgr p]
 
