@@ -8,6 +8,9 @@ public abstract class CuStat {
 		return text;
 	}
 	public void add (CuStat st){}
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {
+		return null;
+	}
 }
 
 class AssignStat extends CuStat{
@@ -46,6 +49,37 @@ class IfStat extends CuStat{
     	s2 = st;
     	super.text += " else " + s2.toString();
     }
+    
+    //input is the mutable type context
+    //output is the new mutable type context
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
+    	//check whether e is boolean
+    	if (!e.isBool()) {
+    		throw new Exception();
+    	}
+    	Map<CuVvc,CuType> mut_cpy1 = new HashMap<CuVvc,CuType>(arg_mut);
+    	Map<CuVvc,CuType> mut_cpy2 = new HashMap<CuVvc,CuType>(arg_mut);
+    	Map<CuVvc,CuType> mut1 = s1.typeCheck(mut_cpy1);
+    	Map<CuVvc,CuType> mut2 = s2.typeCheck(mut_cpy2);
+    	Map<CuVvc,CuType> outMut = new HashMap<CuVvc, CuType>();
+    	for (CuVvc key : mut1.keySet() ) {
+    		CuType t1;
+    		CuType t2 = mut2.get(key);
+    		//lowest common Type
+    		CuType tCom;
+    		//if we didn't find this var in the second map, it is simply discarded
+    		if (t2 != null){
+    			t1 = mut1.get(key);
+    			//get the lowest common type
+    			tCom = t1.commonType(t2);
+    			outMut.put(key, tCom);
+    		}
+    	}
+    	//change the global mutable type context?
+    	mut = outMut;
+    	return outMut;
+    }
+
 }
 
 class ReturnStat extends CuStat{

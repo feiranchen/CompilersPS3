@@ -4,8 +4,9 @@ options { tokenVocab = CubexLexer2; }
 
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
-  FuncTxt functxt = new FuncTxt(); // function and method
-  List<CuType> typeList = new ArrayList<CuType>(); // generic type-para
+  FuncTxt functxt = new FuncTxt();
+  Map<CuVvc,CuType> immut = new HashMap<CuVvc,CuType>();
+  Map<CuVvc,CuType> mut = new HashMap<CuVvc,CuType>();
 }
 
 vc returns [CuVvc v]
@@ -20,14 +21,10 @@ kindcontext returns [List<String> kc]
 
 	: {$kc = new ArrayList<String>();} (LANGLE (TPARA { $kc.add($TPARA.text); } (COMMA TPARA { $kc.add($TPARA.text); })*)? RANGLE)?;
 
-vvt returns [CuVvt cu]
 
-	: VAR COLON t=type { $cu = new Vvt($VAR.text, $t.t); };
+typecontext returns [Map<CuVvc,CuType> tc]
 
-typecontext returns [List<CuVvt> tc]
-
-	: { $tc = new ArrayList<CuVvt>(); } LPAREN (v=vvt { $tc.add($v.cu); } (COMMA v=vvt { $tc.add($v.cu); })*)? RPAREN;
-
+	: { $tc = new HashMap<CuVvc,CuType>(); } LPAREN (v=vv COLON t=type { $tc.put($v.v, $t.t); } (COMMA v=vv COLON t=type { $tc.put($v.v, $t.t); })*)? RPAREN;
 
 
 paratype returns [List<CuType> pt]
