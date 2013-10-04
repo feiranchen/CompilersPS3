@@ -4,7 +4,8 @@ options { tokenVocab = CubexLexer2; }
 
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
-  FuncTxt functxt = new FuncTxt();
+  FuncTxt functxt = new FuncTxt(); // function and method
+  List<CuType> typeList = new ArrayList<CuType>(); // generic type-para
 }
 
 vc returns [CuVvc v]

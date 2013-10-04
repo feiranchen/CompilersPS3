@@ -1,10 +1,13 @@
 parser grammar CubexParser2;
 
 options { tokenVocab = CubexLexer2; }
-
+@header { 
+	import java.util.*;
+}
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
-  FuncTxt functxt = new FuncTxt();
+  FuncTxt functxt = new FuncTxt(); // function and method
+  List<CuType> typeList = new LinkedList<CuType>(); // generic type-para
 }
 
 vc returns [CuVvc v]

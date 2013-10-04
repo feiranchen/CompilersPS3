@@ -56,7 +56,8 @@ public class CubexParser2 extends Parser {
 
 
 	  List<CuClass> classList = new ArrayList<CuClass>();
-	  FuncTxt functxt = new FuncTxt();
+	  FuncTxt functxt = new FuncTxt(); // function and method
+	  List<CuType> typeList = new ArrayList<CuType>(); // generic type-para
 
 	public CubexParser2(TokenStream input) {
 		super(input);
