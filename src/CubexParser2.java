@@ -1175,17 +1175,20 @@ public class CubexParser2 extends Parser {
 		public Token CLSINTF;
 		public KindcontextContext p;
 		public TypeContext t;
-		public Token VAR;
+		public VvContext v;
 		public TypeschemeContext ts;
-		public TerminalNode VAR(int i) {
-			return getToken(CubexParser2.VAR, i);
-		}
 		public TerminalNode LBRACE() { return getToken(CubexParser2.LBRACE, 0); }
 		public List<TerminalNode> SEMICOLON() { return getTokens(CubexParser2.SEMICOLON); }
 		public TerminalNode SEMICOLON(int i) {
 			return getToken(CubexParser2.SEMICOLON, i);
 		}
+		public VvContext vv(int i) {
+			return getRuleContext(VvContext.class,i);
+		}
 		public List<TerminalNode> FUN() { return getTokens(CubexParser2.FUN); }
+		public List<VvContext> vv() {
+			return getRuleContexts(VvContext.class);
+		}
 		public TerminalNode CLSINTF() { return getToken(CubexParser2.CLSINTF, 0); }
 		public KindcontextContext kindcontext() {
 			return getRuleContext(KindcontextContext.class,0);
@@ -1194,7 +1197,6 @@ public class CubexParser2 extends Parser {
 			return getRuleContexts(TypeschemeContext.class);
 		}
 		public TerminalNode RBRACE() { return getToken(CubexParser2.RBRACE, 0); }
-		public List<TerminalNode> VAR() { return getTokens(CubexParser2.VAR); }
 		public TypeContext type() {
 			return getRuleContext(TypeContext.class,0);
 		}
@@ -1222,7 +1224,7 @@ public class CubexParser2 extends Parser {
 			setState(292); match(INTERFACE);
 			setState(293); ((IntfContext)_localctx).CLSINTF = match(CLSINTF);
 			setState(294); ((IntfContext)_localctx).p = kindcontext();
-			((IntfContext)_localctx).c =  new Intf((((IntfContext)_localctx).CLSINTF!=null?((IntfContext)_localctx).CLSINTF.getText():null), ((IntfContext)_localctx).p.kc);
+			((IntfContext)_localctx).c =  new Intf((((IntfContext)_localctx).CLSINTF!=null?((IntfContext)_localctx).CLSINTF.getText():null), ((IntfContext)_localctx).p.kc); classList.add(_localctx.c);
 			setState(313);
 			_la = _input.LA(1);
 			if (_la==EXTENDS) {
@@ -1238,10 +1240,10 @@ public class CubexParser2 extends Parser {
 					{
 					{
 					setState(300); match(FUN);
-					setState(301); ((IntfContext)_localctx).VAR = match(VAR);
+					setState(301); ((IntfContext)_localctx).v = vv();
 					setState(302); ((IntfContext)_localctx).ts = typescheme();
 					setState(303); match(SEMICOLON);
-					_localctx.c.add((((IntfContext)_localctx).VAR!=null?((IntfContext)_localctx).VAR.getText():null), ((IntfContext)_localctx).ts.ts);
+					_localctx.c.add(((IntfContext)_localctx).v.v, ((IntfContext)_localctx).ts.ts); functxt.add(((IntfContext)_localctx).v.v, ((IntfContext)_localctx).ts.ts);
 					}
 					}
 					setState(310);
@@ -1337,7 +1339,7 @@ public class CubexParser2 extends Parser {
 			setState(316); ((ClsContext)_localctx).v = vc();
 			setState(317); ((ClsContext)_localctx).pk = kindcontext();
 			setState(318); ((ClsContext)_localctx).pt = typecontext();
-			((ClsContext)_localctx).c =  new Cls((((ClsContext)_localctx).v!=null?_input.getText(((ClsContext)_localctx).v.start,((ClsContext)_localctx).v.stop):null), ((ClsContext)_localctx).pk.kc, ((ClsContext)_localctx).pt.tc); classList.add(_localctx.c);
+			((ClsContext)_localctx).c =  new Cls(((ClsContext)_localctx).v.v, ((ClsContext)_localctx).pk.kc, ((ClsContext)_localctx).pt.tc); classList.add(_localctx.c);
 			setState(354);
 			_la = _input.LA(1);
 			if (_la==EXTENDS) {
@@ -1383,7 +1385,7 @@ public class CubexParser2 extends Parser {
 					setState(342); ((ClsContext)_localctx).vs = vv();
 					setState(343); ((ClsContext)_localctx).ts = typescheme();
 					setState(344); ((ClsContext)_localctx).s = stat();
-					_localctx.c.add(((ClsContext)_localctx).vs.v, ((ClsContext)_localctx).ts.ts, ((ClsContext)_localctx).s.s);
+					_localctx.c.add(((ClsContext)_localctx).vs.v, ((ClsContext)_localctx).ts.ts, ((ClsContext)_localctx).s.s); functxt.add(((ClsContext)_localctx).vs.v, ((ClsContext)_localctx).ts.ts);
 					}
 					}
 					setState(351);
@@ -1495,7 +1497,7 @@ public class CubexParser2 extends Parser {
 				setState(365); ((ProgramContext)_localctx).v = vv();
 				setState(366); ((ProgramContext)_localctx).ts = typescheme();
 				setState(367); ((ProgramContext)_localctx).s = stat();
-				((ProgramContext)_localctx).p =  new FunPrg((((ProgramContext)_localctx).v!=null?_input.getText(((ProgramContext)_localctx).v.start,((ProgramContext)_localctx).v.stop):null), ((ProgramContext)_localctx).ts.ts, ((ProgramContext)_localctx).s.s); functxt.add(((ProgramContext)_localctx).v.v, ((ProgramContext)_localctx).ts.ts);
+				((ProgramContext)_localctx).p =  new FunPrg(((ProgramContext)_localctx).v.v, ((ProgramContext)_localctx).ts.ts, ((ProgramContext)_localctx).s.s); functxt.add(((ProgramContext)_localctx).v.v, ((ProgramContext)_localctx).ts.ts);
 				setState(377);
 				_errHandler.sync(this);
 				_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
@@ -1507,7 +1509,7 @@ public class CubexParser2 extends Parser {
 						setState(370); ((ProgramContext)_localctx).vs = vv();
 						setState(371); ((ProgramContext)_localctx).ts = typescheme();
 						setState(372); ((ProgramContext)_localctx).s = stat();
-						_localctx.p.add((((ProgramContext)_localctx).vs!=null?_input.getText(((ProgramContext)_localctx).vs.start,((ProgramContext)_localctx).vs.stop):null), ((ProgramContext)_localctx).ts.ts, ((ProgramContext)_localctx).s.s); functxt.add(((ProgramContext)_localctx).vs.v, ((ProgramContext)_localctx).ts.ts);
+						_localctx.p.add(((ProgramContext)_localctx).vs.v, ((ProgramContext)_localctx).ts.ts, ((ProgramContext)_localctx).s.s); functxt.add(((ProgramContext)_localctx).vs.v, ((ProgramContext)_localctx).ts.ts);
 						}
 						} 
 					}
@@ -1733,39 +1735,39 @@ public class CubexParser2 extends Parser {
 		"\u011a\3\2\2\2\u0124\u0125\3\2\2\2\u0125\31\3\2\2\2\u0126\u0127\7\n\2"+
 		"\2\u0127\u0128\7\23\2\2\u0128\u0129\5\6\4\2\u0129\u013b\b\16\1\2\u012a"+
 		"\u012b\7\13\2\2\u012b\u012c\5\16\b\2\u012c\u012d\b\16\1\2\u012d\u0136"+
-		"\7\37\2\2\u012e\u012f\7\f\2\2\u012f\u0130\7\25\2\2\u0130\u0131\5\20\t"+
-		"\2\u0131\u0132\7\36\2\2\u0132\u0133\b\16\1\2\u0133\u0135\3\2\2\2\u0134"+
-		"\u012e\3\2\2\2\u0135\u0138\3\2\2\2\u0136\u0134\3\2\2\2\u0136\u0137\3\2"+
-		"\2\2\u0137\u0139\3\2\2\2\u0138\u0136\3\2\2\2\u0139\u013a\7 \2\2\u013a"+
-		"\u013c\3\2\2\2\u013b\u012a\3\2\2\2\u013b\u013c\3\2\2\2\u013c\33\3\2\2"+
-		"\2\u013d\u013e\7\r\2\2\u013e\u013f\5\2\2\2\u013f\u0140\5\6\4\2\u0140\u0141"+
-		"\5\n\6\2\u0141\u0164\b\17\1\2\u0142\u0143\7\13\2\2\u0143\u0144\5\16\b"+
-		"\2\u0144\u0145\b\17\1\2\u0145\u014b\7\37\2\2\u0146\u0147\5\26\f\2\u0147"+
-		"\u0148\b\17\1\2\u0148\u014a\3\2\2\2\u0149\u0146\3\2\2\2\u014a\u014d\3"+
-		"\2\2\2\u014b\u0149\3\2\2\2\u014b\u014c\3\2\2\2\u014c\u0155\3\2\2\2\u014d"+
-		"\u014b\3\2\2\2\u014e\u014f\7\16\2\2\u014f\u0150\7\33\2\2\u0150\u0151\5"+
-		"\24\13\2\u0151\u0152\7\34\2\2\u0152\u0153\7\36\2\2\u0153\u0154\b\17\1"+
-		"\2\u0154\u0156\3\2\2\2\u0155\u014e\3\2\2\2\u0155\u0156\3\2\2\2\u0156\u015f"+
-		"\3\2\2\2\u0157\u0158\7\f\2\2\u0158\u0159\5\4\3\2\u0159\u015a\5\20\t\2"+
-		"\u015a\u015b\5\26\f\2\u015b\u015c\b\17\1\2\u015c\u015e\3\2\2\2\u015d\u0157"+
-		"\3\2\2\2\u015e\u0161\3\2\2\2\u015f\u015d\3\2\2\2\u015f\u0160\3\2\2\2\u0160"+
-		"\u0162\3\2\2\2\u0161\u015f\3\2\2\2\u0162\u0163\7 \2\2\u0163\u0165\3\2"+
-		"\2\2\u0164\u0142\3\2\2\2\u0164\u0165\3\2\2\2\u0165\35\3\2\2\2\u0166\u0167"+
-		"\5\26\f\2\u0167\u016c\b\20\1\2\u0168\u0169\5\30\r\2\u0169\u016a\5\36\20"+
-		"\2\u016a\u016b\b\20\1\2\u016b\u016d\3\2\2\2\u016c\u0168\3\2\2\2\u016c"+
-		"\u016d\3\2\2\2\u016d\u018a\3\2\2\2\u016e\u016f\7\f\2\2\u016f\u0170\5\4"+
-		"\3\2\u0170\u0171\5\20\t\2\u0171\u0172\5\26\f\2\u0172\u017b\b\20\1\2\u0173"+
-		"\u0174\7\f\2\2\u0174\u0175\5\4\3\2\u0175\u0176\5\20\t\2\u0176\u0177\5"+
-		"\26\f\2\u0177\u0178\b\20\1\2\u0178\u017a\3\2\2\2\u0179\u0173\3\2\2\2\u017a"+
-		"\u017d\3\2\2\2\u017b\u0179\3\2\2\2\u017b\u017c\3\2\2\2\u017c\u017e\3\2"+
-		"\2\2\u017d\u017b\3\2\2\2\u017e\u017f\5\36\20\2\u017f\u0180\b\20\1\2\u0180"+
-		"\u018a\3\2\2\2\u0181\u0182\5\32\16\2\u0182\u0183\5\36\20\2\u0183\u0184"+
-		"\b\20\1\2\u0184\u018a\3\2\2\2\u0185\u0186\5\34\17\2\u0186\u0187\5\36\20"+
-		"\2\u0187\u0188\b\20\1\2\u0188\u018a\3\2\2\2\u0189\u0166\3\2\2\2\u0189"+
-		"\u016e\3\2\2\2\u0189\u0181\3\2\2\2\u0189\u0185\3\2\2\2\u018a\37\3\2\2"+
-		"\2\u018b\u018c\5\36\20\2\u018c\u018d\7\2\2\3\u018d\u018e\b\21\1\2\u018e"+
-		"!\3\2\2\2\37\61\64\67HKY\\_hq\u008c\u00a2\u00d8\u00da\u00e6\u00e9\u0100"+
-		"\u0117\u0121\u0124\u0136\u013b\u014b\u0155\u015f\u0164\u016c\u017b\u0189";
+		"\7\37\2\2\u012e\u012f\7\f\2\2\u012f\u0130\5\4\3\2\u0130\u0131\5\20\t\2"+
+		"\u0131\u0132\7\36\2\2\u0132\u0133\b\16\1\2\u0133\u0135\3\2\2\2\u0134\u012e"+
+		"\3\2\2\2\u0135\u0138\3\2\2\2\u0136\u0134\3\2\2\2\u0136\u0137\3\2\2\2\u0137"+
+		"\u0139\3\2\2\2\u0138\u0136\3\2\2\2\u0139\u013a\7 \2\2\u013a\u013c\3\2"+
+		"\2\2\u013b\u012a\3\2\2\2\u013b\u013c\3\2\2\2\u013c\33\3\2\2\2\u013d\u013e"+
+		"\7\r\2\2\u013e\u013f\5\2\2\2\u013f\u0140\5\6\4\2\u0140\u0141\5\n\6\2\u0141"+
+		"\u0164\b\17\1\2\u0142\u0143\7\13\2\2\u0143\u0144\5\16\b\2\u0144\u0145"+
+		"\b\17\1\2\u0145\u014b\7\37\2\2\u0146\u0147\5\26\f\2\u0147\u0148\b\17\1"+
+		"\2\u0148\u014a\3\2\2\2\u0149\u0146\3\2\2\2\u014a\u014d\3\2\2\2\u014b\u0149"+
+		"\3\2\2\2\u014b\u014c\3\2\2\2\u014c\u0155\3\2\2\2\u014d\u014b\3\2\2\2\u014e"+
+		"\u014f\7\16\2\2\u014f\u0150\7\33\2\2\u0150\u0151\5\24\13\2\u0151\u0152"+
+		"\7\34\2\2\u0152\u0153\7\36\2\2\u0153\u0154\b\17\1\2\u0154\u0156\3\2\2"+
+		"\2\u0155\u014e\3\2\2\2\u0155\u0156\3\2\2\2\u0156\u015f\3\2\2\2\u0157\u0158"+
+		"\7\f\2\2\u0158\u0159\5\4\3\2\u0159\u015a\5\20\t\2\u015a\u015b\5\26\f\2"+
+		"\u015b\u015c\b\17\1\2\u015c\u015e\3\2\2\2\u015d\u0157\3\2\2\2\u015e\u0161"+
+		"\3\2\2\2\u015f\u015d\3\2\2\2\u015f\u0160\3\2\2\2\u0160\u0162\3\2\2\2\u0161"+
+		"\u015f\3\2\2\2\u0162\u0163\7 \2\2\u0163\u0165\3\2\2\2\u0164\u0142\3\2"+
+		"\2\2\u0164\u0165\3\2\2\2\u0165\35\3\2\2\2\u0166\u0167\5\26\f\2\u0167\u016c"+
+		"\b\20\1\2\u0168\u0169\5\30\r\2\u0169\u016a\5\36\20\2\u016a\u016b\b\20"+
+		"\1\2\u016b\u016d\3\2\2\2\u016c\u0168\3\2\2\2\u016c\u016d\3\2\2\2\u016d"+
+		"\u018a\3\2\2\2\u016e\u016f\7\f\2\2\u016f\u0170\5\4\3\2\u0170\u0171\5\20"+
+		"\t\2\u0171\u0172\5\26\f\2\u0172\u017b\b\20\1\2\u0173\u0174\7\f\2\2\u0174"+
+		"\u0175\5\4\3\2\u0175\u0176\5\20\t\2\u0176\u0177\5\26\f\2\u0177\u0178\b"+
+		"\20\1\2\u0178\u017a\3\2\2\2\u0179\u0173\3\2\2\2\u017a\u017d\3\2\2\2\u017b"+
+		"\u0179\3\2\2\2\u017b\u017c\3\2\2\2\u017c\u017e\3\2\2\2\u017d\u017b\3\2"+
+		"\2\2\u017e\u017f\5\36\20\2\u017f\u0180\b\20\1\2\u0180\u018a\3\2\2\2\u0181"+
+		"\u0182\5\32\16\2\u0182\u0183\5\36\20\2\u0183\u0184\b\20\1\2\u0184\u018a"+
+		"\3\2\2\2\u0185\u0186\5\34\17\2\u0186\u0187\5\36\20\2\u0187\u0188\b\20"+
+		"\1\2\u0188\u018a\3\2\2\2\u0189\u0166\3\2\2\2\u0189\u016e\3\2\2\2\u0189"+
+		"\u0181\3\2\2\2\u0189\u0185\3\2\2\2\u018a\37\3\2\2\2\u018b\u018c\5\36\20"+
+		"\2\u018c\u018d\7\2\2\3\u018d\u018e\b\21\1\2\u018e!\3\2\2\2\37\61\64\67"+
+		"HKY\\_hq\u008c\u00a2\u00d8\u00da\u00e6\u00e9\u0100\u0117\u0121\u0124\u0136"+
+		"\u013b\u014b\u0155\u015f\u0164\u016c\u017b\u0189";
 	public static final ATN _ATN =
 		ATNSimulator.deserialize(_serializedATN.toCharArray());
 	static {

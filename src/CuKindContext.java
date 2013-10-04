@@ -1,5 +1,5 @@
 
-public class CuKindContext {
+public abstract class CuKindContext {
 	
 	protected String text = "";
 	@Override public String toString() {

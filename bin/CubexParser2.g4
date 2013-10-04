@@ -139,19 +139,18 @@ stats returns [List<CuStat> cu]
 
 	: {$cu = new ArrayList<CuStat>();} (s=stat {$cu.add($s.s);} (s=stat {$cu.add($s.s);})*)?;
 
-intf returns [CuClass c]
-
-	: INTERFACE CLSINTF p=kindcontext {$c = new Intf($CLSINTF.text, $p.kc);} (EXTENDS t=type {$c.add($t.t);} LBRACE (FUN VAR ts=typescheme SEMICOLON {$c.add($VAR.text, $ts.ts);})* RBRACE)?;
+intf returns [CuClass c] // add to classList? add to funlist
+	: INTERFACE CLSINTF p=kindcontext {$c = new Intf($CLSINTF.text, $p.kc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (FUN v=vv ts=typescheme SEMICOLON {$c.add($v.v, $ts.ts); functxt.add($v.v, $ts.ts);})* RBRACE)?;
 
 cls returns [CuClass c]
 
-	: CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.text, $pk.kc, $pt.tc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN vs=vv ts=typescheme s=stat {$c.add($vs.v, $ts.ts, $s.s);})* RBRACE)?;
+	: CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.v, $pk.kc, $pt.tc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN vs=vv ts=typescheme s=stat {$c.add($vs.v, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* RBRACE)?;
 
 program returns [CuProgr p]
 
 	: s=stat {$p = new StatPrg($s.s);} (ss=stats pr=program {$p.add($ss.cu, $pr.p);})?
 
-	| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);} (FUN vs=vv ts=typescheme s=stat {$p.add($vs.text, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* pr=program {$p.add($pr.p);}
+	| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.v, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);} (FUN vs=vv ts=typescheme s=stat {$p.add($vs.v, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* pr=program {$p.add($pr.p);}
 
 	| i=intf pr=program {$p = new ClassPrg($i.c, $pr.p);}
 

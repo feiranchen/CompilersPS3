@@ -5,3 +5,9 @@ public abstract class CuTop {
 		return text.replaceAll("[ ]+", " ");
 	}
 }
+
+class Top extends CuTop {
+	public Top(CuProgr p) {
+		super.text = p.toString();
+	}
+}
