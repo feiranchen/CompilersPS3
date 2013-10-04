@@ -151,7 +151,7 @@ program returns [CuProgr p]
 
 	: s=stat {$p = new StatPrg($s.s);} (ss=stats pr=program {$p.add($ss.cu, $pr.p);})?
 
-	| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);} (FUN v=vv ts=typescheme s=stat {$p.add($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);})* pr=program {$p.add($pr.p);}
+	| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);} (FUN vs=vv ts=typescheme s=stat {$p.add($vs.text, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* pr=program {$p.add($pr.p);}
 
 	| i=intf pr=program {$p = new IntfPrg($i.i, $pr.p);}
 
