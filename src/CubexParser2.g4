@@ -2,16 +2,16 @@ parser grammar CubexParser2;
 
 options { tokenVocab = CubexLexer2; }
 
+@members {
+  List<CuClass> classList = new ArrayList<CuClass>();
+  FuncTxt functxt = new FuncTxt();
+}
 
 vc returns [CuVvc v]
 	: vvv = CLSINTF {$v = new Vc($vvv.text);};
 	
 vv returns [CuVvc v]
-	: vvv = VAR {$v = new Vv($vvv.text);};
-
-vvc returns [CuVvc v]
-
-	: vvv = (CLSINTF | VAR) {$v = new Vvc($vvv.text);};
+	: vvv = VAR {$v = new Vv($vvv.text);};	
 
 
 
@@ -145,24 +145,16 @@ intf returns [CuInterface i]
 
 cls returns [CuClass c]
 
-	: CLASS CLSINTF pk=kindcontext pt=typecontext {$c = new Cls($CLSINTF.text, $pk.kc, $pt.tc);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN v=vv ts=typescheme s=stat {$c.add($v.v, $ts.ts, $s.s);})* RBRACE)?;
+	: CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.text, $pk.kc, $pt.tc); classList.add($c);} (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? (FUN v=vv ts=typescheme s=stat {$c.add($v.v, $ts.ts, $s.s);})* RBRACE)?;
 
 program returns [CuProgr p]
 
 	: s=stat {$p = new StatPrg($s.s);} (ss=stats pr=program {$p.add($ss.cu, $pr.p);})?
 
-	| FUN VAR ts=typescheme s=stat {$p = new FunPrg($VAR.text, $ts.ts, $s.s);} (FUN VAR ts=typescheme s=stat {$p.add($VAR.text, $ts.ts, $s.s);})* pr=program {$p.add($pr.p);}
+	| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);} (FUN v=vv ts=typescheme s=stat {$p.add($v.text, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);})* pr=program {$p.add($pr.p);}
 
 	| i=intf pr=program {$p = new IntfPrg($i.i, $pr.p);}
 
 	| c=cls pr=program {$p = new ClassPrg($c.c, $pr.p);};
 
 top returns [CuTop cu]: p=program EOF {$cu = new Top($p.p);};
-
-functxt returns [CuFunC f]
-
-	: {$f = new FuncTxt();} (COMMA v=vvc ts=typescheme {$f.add($v.v, $ts.ts);})*;
-
-clsctxt returns [CuClassC c]
-
-	: {$c = new ClassCtxt();} (COMMA k=(INTERFACE | CLASS) CLSINTF p=kindcontext {$c.add($k.text, $CLSINTF.text, $p.kc);} (EXTENDS t=type {$c.add($t.t);} LBRACE (vvv=vv ts=typescheme SEMICOLON {$c.add($vvv.v, $ts.ts);})* RBRACE)? {$c.finish($k.text);})*;
