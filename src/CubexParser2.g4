@@ -1,6 +1,8 @@
 parser grammar CubexParser2;
 
 options { tokenVocab = CubexLexer2; }
+@header {
+}
 
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
@@ -100,16 +102,24 @@ stat returns [CuStat s]
 stats returns [List<CuStat> cu] 
 : {$cu = new ArrayList<CuStat>();} (s=stat {$cu.add($s.s);} (s=stat {$cu.add($s.s);})*)?;
 
+funBody returns [CuStat body]
+: SEMICOLON {$body=new EmptyBody();}
+| s=stat {$body =$s.s;};
+
 intf returns [CuClass c] // add to classList? add to funlist 
 : INTERFACE CLSINTF p=kindcontext {$c = new Intf($CLSINTF.text, $p.kc); classList.add($c);} 
   (EXTENDS t=type {$c.add($t.t);} 
-  LBRACE (FUN v=vv ts=typescheme SEMICOLON {$c.add($v.v, $ts.ts); functxt.add($v.v, $ts.ts);})* RBRACE)?;
+  LBRACE (FUN v=vv ts=typescheme f=funBody 
+            {$c.add($v.v, $ts.ts, $f.body); functxt.add($v.v, $ts.ts);})* 
+  RBRACE)?;
 
 cls returns [CuClass c] 
 : CLASS v=vc pk=kindcontext pt=typecontext {$c = new Cls($v.v, $pk.kc, $pt.tc); classList.add($c);} 
-  (EXTENDS t=type {$c.add($t.t);} LBRACE (s=stat {$c.add($s.s);})* 
-  (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? 
-  (FUN vs=vv ts=typescheme s=stat {$c.add($vs.v, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* RBRACE)?;
+  (EXTENDS t=type {$c.add($t.t);} 
+     LBRACE (s=stat {$c.add($s.s);})* 
+       (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? 
+       (FUN vs=vv ts=typescheme f=funBody {$c.add($vs.v, $ts.ts, $f.body); functxt.add($vs.v, $ts.ts);})* 
+     RBRACE)?;
 
 program returns [CuProgr p]
 : s=stat {$p = new StatPrg($s.s);} (ss=stats pr=program {$p.add($ss.cu, $pr.p);})?

@@ -108,3 +108,9 @@ class WhileStat extends CuStat{
 		text = "while ( " + e.toString() + " ) " + s1.toString();
 	}
 }
+
+class EmptyBody extends CuStat {
+	public EmptyBody(){
+		text=" ;";
+	}
+} 
