@@ -98,7 +98,7 @@ stat returns [CuStat s]
 | v=vv ASSIGN e=expr SEMICOLON {$s = new AssignStat($v.v, $e.e, immut);} 
 | IF LPAREN e=expr RPAREN l=stat {$s = new IfStat($e.e, $l.s);} (ELSE r=stat {$s.add($r.s);})? 
 | WHILE LPAREN e=expr RPAREN st=stat {$s = new WhileStat($e.e, $st.s);}
-| FOR LPAREN VAR IN e=expr RPAREN st=stat {$s = new ForStat($VAR.text, $e.e, $st.s);}
+| FOR LPAREN v=vv IN e=expr RPAREN st=stat {$s = new ForStat($v.v, $e.e, $st.s);}
 | (RETURN | EQUAL) e=expr SEMICOLON {$s = new ReturnStat($e.e);};
 
 stats returns [List<CuStat> cu] 
