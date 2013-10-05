@@ -65,8 +65,16 @@ class ForStat extends CuStat{
     	CuType iter_type = eType.pt.get(0);
     	Map<CuVvc,CuType> mut_cpy = new HashMap<CuVvc,CuType>(arg_mut);
     	mut_cpy.put(var, iter_type);
-    	s1.typeCheck(mut_cpy);
-    	return arg_mut;
+    	Map<CuVvc,CuType> new_mut = s1.typeCheck(mut_cpy);
+    	Map<CuVvc,CuType> out_mut = new HashMap<CuVvc,CuType>();
+    	for (CuVvc key : arg_mut.keySet() ) {
+    		//this key must exist in new_mut
+    		CuType t1 = arg_mut.get(key);
+    		CuType t2 = new_mut.get(key);  
+    		CuType tCom = t1.commonType(t2);
+    		out_mut.put(key, tCom);
+    	}
+    	return out_mut;
     }
 }
 
