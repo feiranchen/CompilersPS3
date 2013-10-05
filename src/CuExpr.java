@@ -6,6 +6,10 @@ public abstract class CuExpr {
 		return text;
 	}
 	public void add(List<CuType> pt, List<CuExpr> es) {}
+	//This is what Yunhan promised me to have, please implement
+	public CuType getType() {
+		return null;
+	}
 	String type = null;
 }
 

@@ -2,6 +2,10 @@ parser grammar CubexParser2;
 
 options { tokenVocab = CubexLexer2; }
 
+@header {
+  import java.util.*;
+}
+
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
   CuFunC functxt = new Function();
