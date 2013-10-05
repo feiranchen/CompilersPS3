@@ -6,6 +6,7 @@ public abstract class CuExpr {
 		return text;
 	}
 	public void add(List<CuType> pt, List<CuExpr> es) {}
+	String type = null;
 }
 
 class AndExpr extends CuExpr{
@@ -31,7 +32,7 @@ class BrkExpr extends CuExpr {
 	private List<CuExpr> data_es;
 	public BrkExpr(List<CuExpr> es){
 		data_es = es;
-		super.text=CuMethod.printList("[", data_es, "]", ",");
+		super.text=Helper.printList("[", data_es, "]", ",");
 	}
 }
 
@@ -185,7 +186,7 @@ class VarExpr extends CuExpr{
 		this.pt = pt;
 		this.es = es;
 		super.text = String.format("%s . %s %s %s", e.toString(), var, 
-				CuMethod.printList("<", pt, ">", ","), CuMethod.printList("(", es, ")", ","));
+				Helper.printList("<", pt, ">", ","), Helper.printList("(", es, ")", ","));
 	}
 
 }
@@ -198,7 +199,7 @@ class VcExp extends CuExpr {
 		this.data_pt=pt;
 		this.data_es=es;
 		
-		super.text=v.toString()+CuMethod.printList("<", pt, ">", ",")+CuMethod.printList("(", es, ")", ",");
+		super.text=v.toString()+Helper.printList("<", pt, ">", ",")+Helper.printList("(", es, ")", ",");
 	}
 }
 
@@ -208,7 +209,7 @@ class VvExp extends CuExpr{
 	}
 	
 	@Override public void add(List<CuType> pt, List<CuExpr> es){
-		super.text += CuMethod.printList("<", pt, ">", ",")+CuMethod.printList("(", es, ")", ",");
+		super.text += Helper.printList("<", pt, ">", ",")+Helper.printList("(", es, ")", ",");
 	}
 	
 }

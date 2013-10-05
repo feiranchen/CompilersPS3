@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -61,8 +62,8 @@ class IfStat extends CuStat{
     //output is the new mutable type context
     public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
     	//check whether e is boolean
-    	if (!e.isBool()) {
-    		throw new Exception();
+    	if (e.type != "Boolean") {
+    		throw new UnsupportedOperationException();
     	}
     	Map<CuVvc,CuType> mut_cpy1 = new HashMap<CuVvc,CuType>(arg_mut);
     	Map<CuVvc,CuType> mut_cpy2 = new HashMap<CuVvc,CuType>(arg_mut);
@@ -83,7 +84,6 @@ class IfStat extends CuStat{
     		}
     	}
     	//change the global mutable type context?
-    	mut = outMut;
     	return outMut;
     }
 
@@ -101,7 +101,7 @@ class Stats extends CuStat{
 	protected ArrayList<CuStat> al;
 	public Stats (List<CuStat> cu) {
 		al = (ArrayList<CuStat>) cu;
-		text = "{ " + CuMethod.listFlatten(al) + " }";
+		text = "{ " + Helper.listFlatten(al) + " }";
 	}
 }
 
