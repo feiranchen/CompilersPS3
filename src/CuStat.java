@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class CuStat {
@@ -14,12 +15,18 @@ public abstract class CuStat {
 }
 
 class AssignStat extends CuStat{
-	private String var;
+	private CuVvc var;
 	private CuExpr ee;
-	public AssignStat (String t, CuExpr e) {
+	public AssignStat (CuVvc t, CuExpr e) {
 		var = t;
 		ee = e;
-		super.text = var + " := " + ee.toString() + " ;";
+		super.text = var.toString() + " := " + ee.toString() + " ;";
+	}
+	
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {
+		return mut;
+		//check v is not in immutable 
+		//CuType exprType = ee.getType();
 	}
 }
 

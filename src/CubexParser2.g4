@@ -123,7 +123,7 @@ stat returns [CuStat s]
 
 	: LBRACE ss=stats RBRACE {$s = new Stats($ss.cu);}
 
-	| VAR ASSIGN e=expr SEMICOLON {$s = new AssignStat($VAR.text, $e.e);} 
+	| v=vv ASSIGN e=expr SEMICOLON {$s = new AssignStat($v.v, $e.e);} 
 
 	| IF LPAREN e=expr RPAREN l=stat {$s = new IfStat($e.e, $l.s);} (ELSE r=stat {$s.add($r.s);})? 
 
