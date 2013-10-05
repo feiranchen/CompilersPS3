@@ -18,16 +18,22 @@ public abstract class CuStat {
 class AssignStat extends CuStat{
 	private CuVvc var;
 	private CuExpr ee;
-	public AssignStat (CuVvc t, CuExpr e) {
+	Map<CuVvc,CuType> immut;
+	public AssignStat (CuVvc t, CuExpr e, Map<CuVvc,CuType> immut) {
 		var = t;
 		ee = e;
+		this.immut = immut;
 		super.text = var.toString() + " := " + ee.toString() + " ;";
 	}
 	
-	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {	
+		//check var is in immutable, type check fails
+		if (immut.containsKey(var)) {
+			throw new UnsupportedOperationException();
+		}
+		CuType exprType = ee.getType();
+		mut.put(var, exprType);
 		return mut;
-		//check v is not in immutable 
-		//CuType exprType = ee.getType();
 	}
 }
 
