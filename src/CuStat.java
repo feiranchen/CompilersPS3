@@ -177,3 +177,9 @@ class WhileStat extends CuStat{
     	return out_mut;
     }
 }
+
+class EmptyBody extends CuStat {
+	public EmptyBody(){
+		text=" ;";
+	}
+} 

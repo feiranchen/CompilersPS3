@@ -68,7 +68,7 @@ class Ele {
 		this.kc = kc;
 		//default supper type is Top
 		this.superType = new VTopBot("Thing");
-		this.func = new FuncTxt();
+		this.func = new Function();
 	}
 	
 	public void set_superType(CuType superType) {
