@@ -5,10 +5,6 @@ options { tokenVocab = CubexLexer2; }
    import java.util.*;
 }
 
-@header {
-  import java.util.*;
-}
-
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
   CuFunC functxt = new Function();

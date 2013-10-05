@@ -959,13 +959,17 @@ public class CubexParser2 extends Parser {
 	public static class StatContext extends ParserRuleContext {
 		public CuStat s;
 		public StatsContext ss;
-		public Token VAR;
+		public VvContext v;
 		public ExprContext e;
 		public StatContext l;
 		public StatContext r;
 		public StatContext st;
+		public Token VAR;
 		public TerminalNode LBRACE() { return getToken(CubexParser2.LBRACE, 0); }
 		public TerminalNode SEMICOLON() { return getToken(CubexParser2.SEMICOLON, 0); }
+		public VvContext vv() {
+			return getRuleContext(VvContext.class,0);
+		}
 		public TerminalNode EQUAL() { return getToken(CubexParser2.EQUAL, 0); }
 		public TerminalNode RBRACE() { return getToken(CubexParser2.RBRACE, 0); }
 		public TerminalNode LPAREN() { return getToken(CubexParser2.LPAREN, 0); }
@@ -1015,11 +1019,11 @@ public class CubexParser2 extends Parser {
 			case VAR:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(237); ((StatContext)_localctx).VAR = match(VAR);
+				setState(237); ((StatContext)_localctx).v = vv();
 				setState(238); match(ASSIGN);
 				setState(239); ((StatContext)_localctx).e = expr(0);
 				setState(240); match(SEMICOLON);
-				((StatContext)_localctx).s =  new AssignStat((((StatContext)_localctx).VAR!=null?((StatContext)_localctx).VAR.getText():null), ((StatContext)_localctx).e.e);
+				((StatContext)_localctx).s =  new AssignStat(((StatContext)_localctx).v.v, ((StatContext)_localctx).e.e, immut);
 				}
 				break;
 			case IF:
@@ -1767,7 +1771,7 @@ public class CubexParser2 extends Parser {
 		"\u00e3\3\2\2\2\u00e5\u00e6\3\2\2\2\u00e6\u00e9\3\2\2\2\u00e7\u00e5\3\2"+
 		"\2\2\u00e8\u00dd\3\2\2\2\u00e8\u00e9\3\2\2\2\u00e9\23\3\2\2\2\u00ea\u00eb"+
 		"\7\37\2\2\u00eb\u00ec\5\26\f\2\u00ec\u00ed\7 \2\2\u00ed\u00ee\b\13\1\2"+
-		"\u00ee\u0117\3\2\2\2\u00ef\u00f0\7\25\2\2\u00f0\u00f1\7\67\2\2\u00f1\u00f2"+
+		"\u00ee\u0117\3\2\2\2\u00ef\u00f0\5\4\3\2\u00f0\u00f1\7\67\2\2\u00f1\u00f2"+
 		"\5\20\t\2\u00f2\u00f3\7\36\2\2\u00f3\u00f4\b\13\1\2\u00f4\u0117\3\2\2"+
 		"\2\u00f5\u00f6\7\4\2\2\u00f6\u00f7\7\33\2\2\u00f7\u00f8\5\20\t\2\u00f8"+
 		"\u00f9\7\34\2\2\u00f9\u00fa\5\24\13\2\u00fa\u00ff\b\13\1\2\u00fb\u00fc"+
