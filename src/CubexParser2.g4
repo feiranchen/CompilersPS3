@@ -5,6 +5,10 @@ options { tokenVocab = CubexLexer2; }
    import java.util.*;
 }
 
+@header {
+  import java.util.*;
+}
+
 @members {
   List<CuClass> classList = new ArrayList<CuClass>();
   CuFunC functxt = new Function();
@@ -94,7 +98,7 @@ exprs returns [List<CuExpr> cu]
 
 stat returns [CuStat s]
 : LBRACE ss=stats RBRACE {$s = new Stats($ss.cu);}
-| VAR ASSIGN e=expr SEMICOLON {$s = new AssignStat($VAR.text, $e.e);} 
+| v=vv ASSIGN e=expr SEMICOLON {$s = new AssignStat($v.v, $e.e, immut);} 
 | IF LPAREN e=expr RPAREN l=stat {$s = new IfStat($e.e, $l.s);} (ELSE r=stat {$s.add($r.s);})? 
 | WHILE LPAREN e=expr RPAREN st=stat {$s = new WhileStat($e.e, $st.s);}
 | FOR LPAREN VAR IN e=expr RPAREN st=stat {$s = new ForStat($VAR.text, $e.e, $st.s);}
