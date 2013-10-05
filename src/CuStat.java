@@ -41,10 +41,12 @@ class ForStat extends CuStat{
 	private CuVvc var;
 	private CuExpr e;
 	private CuStat s1;
-	public ForStat(CuVvc v, CuExpr ee, CuStat ss) {
+	private Map<CuVvc,CuType> immut;
+	public ForStat(CuVvc v, CuExpr ee, CuStat ss, Map<CuVvc,CuType> immut) {
 		var = v;
 		e = ee;
 		s1 = ss;
+		this.immut = immut;
 		super.text = "for ( " + var + " in " + e.toString() + " ) " + s1.toString();
 	}
     public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
@@ -62,6 +64,9 @@ class ForStat extends CuStat{
     		throw new UnsupportedOperationException();
     	}
     	//Should we check whether var is in immutble variables??????
+    	if (immut.containsKey(var)) {
+    		throw new UnsupportedOperationException();
+    	}
     	CuType iter_type = eType.pt.get(0);
     	Map<CuVvc,CuType> mut_cpy = new HashMap<CuVvc,CuType>(arg_mut);
     	mut_cpy.put(var, iter_type);
