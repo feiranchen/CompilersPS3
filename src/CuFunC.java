@@ -10,11 +10,11 @@ public abstract class CuFunC {
 	public void add(CuVvc v, CuTypeScheme ts) {}
 }
 
-class FuncTxt extends CuFunC {
+class Function extends CuFunC {
 	public List<CuVvc> v = new ArrayList<CuVvc>();
 	public List<CuTypeScheme> ts = new ArrayList<CuTypeScheme>();
 	
-	public FuncTxt() {
+	public Function() {
 	}
 	
 	@Override public void add(CuVvc v, CuTypeScheme ts) {
