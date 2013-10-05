@@ -6,6 +6,10 @@ public abstract class CuType {
 	@Override public String toString() {
 		return text;
 	}
+	public CuType commonType(CuType t2) {
+// TODO Auto-generated method stub
+		return null;
+	}
 }
 
 class VClass extends CuType {
@@ -14,7 +18,7 @@ class VClass extends CuType {
 	public VClass(String s, List<CuType> pt){
 		data_s=s;
 		this.pt = pt;
-		super.text=data_s+ " "+ CuMethod.printList("<", pt, ">", ",");
+		super.text=data_s+ " "+ Helper.printList("<", pt, ">", ",");
 	}
 }
 

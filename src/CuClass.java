@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class CuClass {
 	protected String text = "";
@@ -23,7 +24,7 @@ class Cls extends CuClass {
 	//kind context theta
 	List<String> kc;
 	//type context gamma
-	List<CuVvt> tc;
+	Map<CuVvc, CuType> tc;
 	//function context for method lookup, we don't need the following 
 	//statement for this purpose
 	CuFunC functxt;
@@ -33,10 +34,10 @@ class Cls extends CuClass {
 	List<String> fun = new ArrayList<String>();
 	
 	
-	public Cls(CuVvc clsintf, List<String> kc, List<CuVvt> tc) {
+	public Cls(CuVvc clsintf, List<String> kc, Map<CuVvc, CuType> tc2) {
 		this.clsintf = clsintf.toString();
 		this.kc = kc;
-		this.tc = tc;
+		this.tc = tc2;
 	}
 	@Override public void add (CuType t) {
 		superType = t;
@@ -58,8 +59,8 @@ class Cls extends CuClass {
 	
 	@Override public String toString() {
 		return String.format("class %s %s %s extends %s { %s super ( %s ) ; %s }", 
-				clsintf, CuMethod.printList("<", kc, ">", ","), CuMethod.printList("(", tc, ")", ","), superType.toString(), 
-				CuMethod.printList("", ss, "", ""), CuMethod.printList("(", es, ")", ","), CuMethod.printList("", fun, "", ""));
+				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
+				Helper.printList("", ss, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
 	}
 }
 

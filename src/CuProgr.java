@@ -42,7 +42,7 @@ class FunPrg extends CuProgr {
 	}
 	
 	@Override public String toString() {
-		return CuMethod.printList("", fun, "", "") + " " + p.toString();
+		return Helper.printList("", fun, "", "") + " " + p.toString();
 	}
 }
 
@@ -54,6 +54,6 @@ class StatPrg extends CuProgr {
 	}
 	
 	@Override public void add(List<CuStat> cu, CuProgr p) {
-		text += CuMethod.listFlatten(cu) + " "+ p.toString();
+		text += Helper.listFlatten(cu) + " "+ p.toString();
 	}
 }
