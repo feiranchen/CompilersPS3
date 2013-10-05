@@ -2,6 +2,7 @@ parser grammar CubexParser2;
 
 options { tokenVocab = CubexLexer2; }
 @header {
+   import java.util.*;
 }
 
 @members {
