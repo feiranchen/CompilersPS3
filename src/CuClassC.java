@@ -29,7 +29,7 @@ class ClassCtxt extends CuClassC {
 		this.keyword = k;
 		this.clsintf = ci;
 		this.kc = kc;
-		text += String.format(" , %s %s %s extends", keyword, clsintf, CuMethod.printList("<", kc, ">", ","));
+		text += String.format(" , %s %s %s extends", keyword, clsintf, Helper.printList("<", kc, ">", ","));
 	}
 	
 	@Override public void add (CuType t) {
@@ -48,7 +48,7 @@ class ClassCtxt extends CuClassC {
 		
 		String s = String.format("%s %s ;", vv.toString(), ts.toString());
 		VvTypeScheme.add(s);
-		text +=  " " + CuMethod.printList("{", VvTypeScheme, "}", ";");
+		text +=  " " + Helper.printList("{", VvTypeScheme, "}", ";");
 	}
 	
 }

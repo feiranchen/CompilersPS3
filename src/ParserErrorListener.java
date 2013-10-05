@@ -20,7 +20,7 @@ public class ParserErrorListener extends BaseErrorListener
 			int line, int charPositionInLine, String msg, RecognitionException e)
 	{
 		if(debug) {
-			CuMethod.P("syntaxError:");
+			Helper.P("syntaxError:");
 			List<String> stack = ((Parser)recognizer).getRuleInvocationStack(); 
 			Collections.reverse(stack);
 			System.err.println("rule stack: "+stack);

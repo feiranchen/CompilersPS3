@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class CuTypeScheme {
@@ -10,12 +11,12 @@ public abstract class CuTypeScheme {
 
 class TypeScheme extends CuTypeScheme {
 	List<String> data_kc;
-	List<CuVvt>    data_tc;
+	Map<CuVvc, CuType> data_tc;
 	CuType         data_t;
-	public TypeScheme(List<String> kc, List<CuVvt> tc , CuType t){
+	public TypeScheme(List<String> kc, Map<CuVvc, CuType> tc , CuType t){
 		data_kc=kc;
 		data_tc=tc;
 		data_t=t;
-		super.text=CuMethod.printList("<", data_kc, ">", ",")+" "+CuMethod.printList("(", data_tc, ")", ",")+" : "+t.toString();
+		super.text=Helper.printList("<", data_kc, ">", ",")+" "+Helper.printMap("(", data_tc, ")", ",")+" : "+t.toString();
 	}
 }
