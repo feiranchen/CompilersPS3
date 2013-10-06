@@ -8,6 +8,10 @@ import java.util.List;
 public abstract class CuType {
 	protected static CuType top = new Top();
 	protected static CuType bottom = new Bottom();
+	protected static CuType bool = new Bool();
+	protected static CuType integer = new Int();
+	protected static CuType character = new Char();
+	protected static CuType string = new Str();
 	protected List<CuType> parentType;
 	protected Object val = ""; // value field of each type, e.g. Iter.val is HashSet<E>, Int.val is Integer
 	protected String text = "";
