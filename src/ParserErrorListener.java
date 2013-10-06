@@ -5,8 +5,6 @@ import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.Parser;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.atn.ATNConfigSet;
-import org.antlr.v4.runtime.dfa.DFA;
 
 public class ParserErrorListener extends BaseErrorListener
 { 

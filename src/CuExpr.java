@@ -6,9 +6,8 @@ public abstract class CuExpr {
 		return text;
 	}
 	public void add(List<CuType> pt, List<CuExpr> es) {}
-	//This is what Yunhan promised me to have, please implement
-	public CuType getType() {
-		return null;
+	public CuType calculateType(CuContext context) {
+		throw new NoSuchTypeException();
 	}
 	String type = null;
 }
@@ -175,7 +174,7 @@ class TimesExpr extends CuExpr{
 	public TimesExpr(CuExpr e1, CuExpr e2) {
 		this.e1 = e1;
 		this.e2 = e2;
-		super.text = String.format("%s . times < > ( %s )", e1.toString(), e2.toString());
+		super.text = String.format("%s . times < > ( %s )", this.e1.toString(), this.e2.toString());
 	}
 }
 
@@ -189,8 +188,8 @@ class VarExpr extends CuExpr{
 		this.var = var;
 		this.pt = pt;
 		this.es = es;
-		super.text = String.format("%s . %s %s %s", e.toString(), var, 
-				Helper.printList("<", pt, ">", ","), Helper.printList("(", es, ")", ","));
+		super.text = String.format("%s . %s %s %s", this.e.toString(), this.var, 
+				Helper.printList("<", this.pt, ">", ","), Helper.printList("(", this.es, ")", ","));
 	}
 
 }
@@ -203,7 +202,7 @@ class VcExp extends CuExpr {
 		this.data_pt=pt;
 		this.data_es=es;
 		
-		super.text=v.toString()+Helper.printList("<", pt, ">", ",")+Helper.printList("(", es, ")", ",");
+		super.text=data_v.toString()+Helper.printList("<", data_pt, ">", ",")+Helper.printList("(", data_es, ")", ",");
 	}
 }
 

@@ -67,7 +67,7 @@ class ForStat extends CuStat{
     	if (immut.containsKey(var)) {
     		throw new UnsupportedOperationException();
     	}
-    	CuType iter_type = eType.getFirstArgument();
+    	CuType iter_type = eType.getArgument();
     	Map<CuVvc,CuType> mut_cpy = new HashMap<CuVvc,CuType>(arg_mut);
     	mut_cpy.put(var, iter_type);
     	Map<CuVvc,CuType> new_mut = s1.typeCheck(mut_cpy);

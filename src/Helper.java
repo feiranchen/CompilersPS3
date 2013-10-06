@@ -43,7 +43,7 @@ public class Helper {
 	protected static void P(String s) {
 		System.out.println(s);
 	}
-	
+	/* thoughts coming, to implement later on */
 	protected static void ToDo(String comment){
 	}
 }
