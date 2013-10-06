@@ -11,7 +11,11 @@ public abstract class CuStat {
 	}
 	public void add (CuStat st){}
 	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {
-		return null;
+		return mut;
+	}
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		return re;
 	}
 }
 
@@ -31,9 +35,16 @@ class AssignStat extends CuStat{
 		if (immut.containsKey(var)) {
 			throw new UnsupportedOperationException();
 		}
-		CuType exprType = ee.getType();
+		CuType exprType = ee.calculateType();
 		mut.put(var, exprType);
 		return mut;
+	}
+	
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		re.b = false;
+		re.tau = CuType.bottom;
+		return re;
 	}
 }
 
@@ -51,7 +62,7 @@ class ForStat extends CuStat{
 	}
     public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
     	//check whether e is an iterable of tao
-    	CuType eType = e.getType();
+    	CuType eType = e.calculateType();
     	if (!(eType instanceof VClass) ) {
     		throw new UnsupportedOperationException();
     	}
@@ -63,7 +74,7 @@ class ForStat extends CuStat{
     	if (arg_mut.containsKey(var)) {
     		throw new UnsupportedOperationException();
     	}
-    	//Should we check whether var is in immutble variables??????
+    	//var can't appear in immutable variables
     	if (immut.containsKey(var)) {
     		throw new UnsupportedOperationException();
     	}
@@ -76,11 +87,16 @@ class ForStat extends CuStat{
     		//this key must exist in new_mut
     		CuType t1 = arg_mut.get(key);
     		CuType t2 = new_mut.get(key);  
-    		CuType tCom = t1.commonType(t2);
+    		CuType tCom = CuType.commonParent(t1, t2);
     		out_mut.put(key, tCom);
     	}
     	return out_mut;
     }
+	public HReturn calculateType() {
+		HReturn re = s1.calculateType();
+		re.b = false;
+		return re;
+	}
 }
 
 class IfStat extends CuStat{
@@ -119,13 +135,26 @@ class IfStat extends CuStat{
     		if (t2 != null){
     			t1 = mut1.get(key);
     			//get the lowest common type
-    			tCom = t1.commonType(t2);
+    			tCom = CuType.commonParent(t, t2);
     			outMut.put(key, tCom);
     		}
     	}
     	//change the global mutable type context?
     	return outMut;
     }
+	public HReturn calculateType() {
+		HReturn re1 = s1.calculateType();
+		HReturn re2 = s2.calculateType();
+		HReturn re_out = new HReturn();
+		if (re1.b==false || re2.b==false) {
+			re_out.b = false;
+		}
+		else {
+			re_out.b = true;
+		}
+		re_out.tau = CuType.commonParent(re1.tau, re2.tau);
+		return re_out;
+	}
 
 }
 
@@ -134,6 +163,15 @@ class ReturnStat extends CuStat{
 	public ReturnStat (CuExpr ee) {
 		e = ee;
 		super.text = "return " + e.toString() + " ;";
+	}
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
+    	return arg_mut;
+    }
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		re.b = true;
+		re.tau = e.calculateType();
+		return re;
 	}
 }
 
@@ -148,6 +186,16 @@ class Stats extends CuStat{
 			mut = s.typeCheck(mut);
 		}
 		return mut;
+	}
+	public HReturn calculateType() {
+		//default is false, bottom
+		HReturn re = new HReturn();
+		for (CuStat cs : al) {
+			HReturn temp = cs.calculateType();
+			re.b = temp.b;
+			re.tau = CuType.commonParent(re.tau, temp.tau)
+		}
+		return re;
 	}
 }
 
@@ -171,10 +219,15 @@ class WhileStat extends CuStat{
     		//this key must exist in new_mut
     		CuType t1 = arg_mut.get(key);
     		CuType t2 = new_mut.get(key);  
-    		CuType tCom = t1.commonType(t2);
+    		CuType tCom = CuType.commonParent(t1, t2);
     		out_mut.put(key, tCom);
     	}
     	return out_mut;
+    }
+    public HReturn calculateType() {
+    	HReturn re = s1.calculateType();
+    	re.b = false;
+    	return re;
     }
 }
 
