@@ -66,9 +66,6 @@ class Ele {
 		this.keyword = keyword;
 		this.name = name;
 		this.kc = kc;
-		//default supper type is Top
-		this.superType = new VTopBot("Thing");
-		this.func = new FuncTxt();
 	}
 	
 	public void set_superType(CuType superType) {

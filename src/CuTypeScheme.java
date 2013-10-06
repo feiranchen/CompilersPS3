@@ -10,9 +10,9 @@ public abstract class CuTypeScheme {
 }
 
 class TypeScheme extends CuTypeScheme {
-	List<String> data_kc;
-	Map<CuVvc, CuType> data_tc;
-	CuType         data_t;
+	List<String>        data_kc;
+	Map<CuVvc, CuType>  data_tc;
+	CuType              data_t;
 	public TypeScheme(List<String> kc, Map<CuVvc, CuType> tc , CuType t){
 		data_kc=kc;
 		data_tc=tc;

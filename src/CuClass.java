@@ -29,9 +29,10 @@ class Cls extends CuClass {
 	//statement for this purpose
 	CuFunC functxt;
 	
-	List<CuStat> ss = new ArrayList<CuStat>();
+	List<CuStat> classStatement = new ArrayList<CuStat>();
 	List<CuExpr> es;
 	List<String> fun = new ArrayList<String>();
+	List<Function> functions=new ArrayList<Function>();
 	
 	
 	public Cls(CuVvc clsintf, List<String> kc, Map<CuVvc, CuType> tc2) {
@@ -44,7 +45,7 @@ class Cls extends CuClass {
 	}
 	
 	@Override public void add (CuStat s) {
-		ss.add(s);
+		classStatement.add(s);
 	}
 	
 	@Override public void add (List<CuExpr> s) {
@@ -55,12 +56,13 @@ class Cls extends CuClass {
 		functxt.add(v, ts);
 		String t = String.format("fun %s %s %s", v, ts.toString(), s.toString());
 		fun.add(t);
+		functions.add(new Function(v,ts,s));
 	}
 	
 	@Override public String toString() {
 		return String.format("class %s %s %s extends %s { %s super ( %s ) ; %s }", 
 				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
-				Helper.printList("", ss, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
+				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
 	}
 }
 
@@ -71,6 +73,7 @@ class Intf extends CuClass{
 	private CuType t;
 	private ArrayList<String> v_names = new ArrayList<String>();
 	private ArrayList<CuTypeScheme> ts_names = new ArrayList<CuTypeScheme>();
+	List<Function> functions=new ArrayList<Function>();
 	public Intf (String iname, List<String> kname){
 		intf_name = iname;
 		kc_name = kname;
@@ -86,10 +89,11 @@ class Intf extends CuClass{
 		text += " " + t.toString();
 	}
 	@Override
-	public void add (CuVvc v_name, CuTypeScheme ts) {
+	public void add (CuVvc v_name, CuTypeScheme ts, CuStat s) {
 		v_names.add(v_name.toString());
 		ts_names.add(ts);
-		funs += " fun " + v_name + ts.toString() + " ;";
+		funs += " fun " + v_name + ts.toString() + s.toString();
+		functions.add(new Function(v_name,ts,s));
 	}
 	
 	@Override public String toString() {
