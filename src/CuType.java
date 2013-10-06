@@ -1,10 +1,13 @@
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 /*** wild type??? */
 /** class declaration add type */
 
 public abstract class CuType {
 	protected static CuType top = new Top();
+	protected static CuType bottom = new Bottom();
 	protected List<CuType> parentType;
 	protected Object val = ""; // value field of each type, e.g. Iter.val is HashSet<E>, Int.val is Integer
 	protected String text = "";
@@ -25,7 +28,13 @@ public abstract class CuType {
 	public boolean isClass() {return false;}
 	public boolean isIntersect() { return false;}
 	public boolean isInterface() {return false;}
-	public CuType getFirstArgument() throws NoSuchTypeException {
+	public boolean isIterable() {return false;}
+	public boolean isString() {return false;}
+	public boolean isCharacter() {return false;}
+	public boolean isInteger() {return false;}
+	public boolean isBoolean() {return false;}
+
+	public CuType getArgument() throws NoSuchTypeException {
 		throw new NoSuchTypeException();
 	}
 //// equals and subtypeof
@@ -40,7 +49,23 @@ public abstract class CuType {
 		return false;
 	}
 	public static CuType commonParent(CuType t1, CuType t2) {
-		return null;
+		if (t1 == null) return t2;
+		if (t2 == null) return t1;
+		List<CuType> parent1 = superTypeList(t1, new ArrayList<CuType>());
+		List<CuType> parent2 = superTypeList(t2, new ArrayList<CuType>());
+		for (CuType p : parent1) {
+			if (parent2.contains(p)) return p;
+		}
+		return top;
+	}
+	// find all the super types of n, including itself
+	private static List<CuType> superTypeList(CuType n, List<CuType> l) {
+		l.add(n);
+		if (n.isTop()) { return l;}
+		for (CuType p : n.parentType) {
+			superTypeList(p, l);
+		}
+		return l;
 	}
 	
 	@Override public String toString() {
@@ -48,9 +73,21 @@ public abstract class CuType {
 	}
 }
 
+class Iter extends VClass {
+	public Iter(CuType arg) {
+		super(CuVvc.ITERABLE, new ArrayList<CuType> ());
+		super.type = arg;
+		super.text=val.toString()+ " <" + arg.toString()+">";
+		Helper.ToDo("type check Iterable?");
+	}
+	@Override public boolean isIterable() {return true;}
+	@Override public CuType getArgument() throws NoSuchTypeException {
+		return type;
+	}
+}
 class VClass extends CuType {
 	List<CuType> types = new ArrayList<CuType>();
-	
+	CuType type = bottom; // for Iterable<E>
 	public VClass(String s, List<CuType> pt){
 		val = new Vc(s);
 		types.addAll(pt);
@@ -58,17 +95,38 @@ class VClass extends CuType {
 	}
 	@Override public boolean isClass() {return true;}
 	@Override public boolean isInterface() {return false;}
-	@Override public boolean equals(CuType t) {
-		if(t instanceof VClass) {
-			return val.equals(t.val) && types.equals(((VClass) t).types);
+	@Override public boolean equals(CuType that) {
+		if(that.isClass()) {
+			VClass t = (VClass) that;
+			return val.equals(t.val) && types.containsAll(t.types) && t.types.contains(types)&& type.equals(((VClass) t).type);
 		}
 		return false;
 	}
-	@Override public CuType getFirstArgument() throws NoSuchTypeException {
-		return types.get(0);
-	}
 }
-
+class Bool extends VClass {
+	public Bool() {
+		super(CuVvc.BOOLEAN, new ArrayList<CuType> ());
+	}
+	@Override public boolean isBoolean() {return true;}
+}
+class Int extends VClass {
+	public Int() {
+		super(CuVvc.INTEGER, new ArrayList<CuType> ());
+	}
+	@Override public boolean isInteger() {return true;}
+}
+class Char extends VClass {
+	public Char() {
+		super(CuVvc.CHARACTER, new ArrayList<CuType> ());
+	}
+	@Override public boolean isCharacter() {return true;}
+}
+class Str extends VClass {
+	public Str() {
+		super(CuVvc.STRING, new ArrayList<CuType> ());
+	}
+	@Override public boolean isString() {return true;}
+}
 class VTypeInter extends CuType {
 	List<CuType> parents = new ArrayList<CuType>();
 	public VTypeInter(CuType t1){
