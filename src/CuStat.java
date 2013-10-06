@@ -116,7 +116,7 @@ class IfStat extends CuStat{
     
     //input is the mutable type context
     //output is the new mutable type context
-    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeExcetion{
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeException {
     	//check whether e is boolean
     	if (e.type != "Boolean") {
     		throw new NoSuchTypeException();
@@ -193,7 +193,7 @@ class Stats extends CuStat{
 		for (CuStat cs : al) {
 			HReturn temp = cs.calculateType();
 			re.b = temp.b;
-			re.tau = CuType.commonParent(re.tau, temp.tau)
+			re.tau = CuType.commonParent(re.tau, temp.tau);
 		}
 		return re;
 	}
