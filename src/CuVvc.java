@@ -4,6 +4,7 @@ public abstract class CuVvc {
 	@Override public String toString() {
 		return text;
 	}
+	public boolean equals(CuVvc that) { return text.equals(that.text); }
 }
 
 class Vc extends CuVvc{

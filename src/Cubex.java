@@ -17,7 +17,7 @@ public class Cubex {
 		
 		String coreLang = null;
 		try {
-			coreLang = parser.top().cu.toString();
+			coreLang = parser.program().p.toString();
 		} catch (Exception e) {
 			System.out.println("parser error");
 			System.exit(-2);

@@ -57,7 +57,7 @@ class IfStat extends CuStat{
     public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
     	//check whether e is boolean
     	if (e.type != "Boolean") {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	Map<CuVvc,CuType> mut_cpy1 = new HashMap<CuVvc,CuType>(arg_mut);
     	Map<CuVvc,CuType> mut_cpy2 = new HashMap<CuVvc,CuType>(arg_mut);
