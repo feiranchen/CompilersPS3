@@ -1,6 +1,4 @@
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 /*** wild type??? */
 /** class declaration add type */
@@ -82,6 +80,12 @@ class Iter extends VClass {
 		super(CuVvc.ITERABLE, new ArrayList<CuType> ());
 		super.type = arg;
 		super.text=val.toString()+ " <" + arg.toString()+">";
+		// set its parent types
+		List<CuType> parents = new ArrayList<CuType>();
+		for (CuType t : arg.parentType) {
+			parents.add(new Iter(t));
+		}
+		super.changeParents(parents);
 		Helper.ToDo("type check Iterable?");
 	}
 	@Override public boolean isIterable() {return true;}
