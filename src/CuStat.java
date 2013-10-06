@@ -10,8 +10,12 @@ public abstract class CuStat {
 		return text;
 	}
 	public void add (CuStat st){}
-	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {
-		return null;
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) throws NoSuchTypeException {
+		return mut;
+	}
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		return re;
 	}
 }
 
@@ -26,14 +30,21 @@ class AssignStat extends CuStat{
 		super.text = var.toString() + " := " + ee.toString() + " ;";
 	}
 	
-	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {	
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) throws NoSuchTypeException{	
 		//check var is in immutable, type check fails
 		if (immut.containsKey(var)) {
-			throw new UnsupportedOperationException();
+			throw new NoSuchTypeException();
 		}
-		CuType exprType = ee.getType();
+		CuType exprType = ee.calculateType();
 		mut.put(var, exprType);
 		return mut;
+	}
+	
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		re.b = false;
+		re.tau = CuType.bottom;
+		return re;
 	}
 }
 
@@ -49,23 +60,23 @@ class ForStat extends CuStat{
 		this.immut = immut;
 		super.text = "for ( " + var + " in " + e.toString() + " ) " + s1.toString();
 	}
-    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeException {
     	//check whether e is an iterable of tao
-    	CuType eType = e.getType();
+    	CuType eType = e.calculateType();
     	if (!(eType instanceof VClass) ) {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	//eType = (VClass)eType;
     	if (eType.val.equals("Iterable")) {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	//my understanding is var can't appear in mutable variables
     	if (arg_mut.containsKey(var)) {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
-    	//Should we check whether var is in immutble variables??????
+    	//var can't appear in immutable variables
     	if (immut.containsKey(var)) {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	CuType iter_type = eType.getArgument();
     	Map<CuVvc,CuType> mut_cpy = new HashMap<CuVvc,CuType>(arg_mut);
@@ -81,6 +92,11 @@ class ForStat extends CuStat{
     	}
     	return out_mut;
     }
+	public HReturn calculateType() {
+		HReturn re = s1.calculateType();
+		re.b = false;
+		return re;
+	}
 }
 
 class IfStat extends CuStat{
@@ -100,7 +116,7 @@ class IfStat extends CuStat{
     
     //input is the mutable type context
     //output is the new mutable type context
-    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeException {
     	//check whether e is boolean
     	if (e.type != "Boolean") {
     		throw new NoSuchTypeException();
@@ -126,6 +142,19 @@ class IfStat extends CuStat{
     	//change the global mutable type context?
     	return outMut;
     }
+	public HReturn calculateType() {
+		HReturn re1 = s1.calculateType();
+		HReturn re2 = s2.calculateType();
+		HReturn re_out = new HReturn();
+		if (re1.b==false || re2.b==false) {
+			re_out.b = false;
+		}
+		else {
+			re_out.b = true;
+		}
+		re_out.tau = CuType.commonParent(re1.tau, re2.tau);
+		return re_out;
+	}
 
 }
 
@@ -135,6 +164,15 @@ class ReturnStat extends CuStat{
 		e = ee;
 		super.text = "return " + e.toString() + " ;";
 	}
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeException {
+    	return arg_mut;
+    }
+	public HReturn calculateType() {
+		HReturn re = new HReturn();
+		re.b = true;
+		re.tau = e.calculateType();
+		return re;
+	}
 }
 
 class Stats extends CuStat{
@@ -143,11 +181,21 @@ class Stats extends CuStat{
 		al = (ArrayList<CuStat>) cu;
 		text = "{ " + Helper.listFlatten(al) + " }";
 	}
-	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) {	
+	public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> mut) throws NoSuchTypeException {	
 		for (CuStat s : al) {
 			mut = s.typeCheck(mut);
 		}
 		return mut;
+	}
+	public HReturn calculateType() {
+		//default is false, bottom
+		HReturn re = new HReturn();
+		for (CuStat cs : al) {
+			HReturn temp = cs.calculateType();
+			re.b = temp.b;
+			re.tau = CuType.commonParent(re.tau, temp.tau);
+		}
+		return re;
 	}
 }
 
@@ -159,10 +207,10 @@ class WhileStat extends CuStat{
 		s1 = st;
 		text = "while ( " + e.toString() + " ) " + s1.toString();
 	}
-    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
+    public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) throws NoSuchTypeException {
     	//check whether e is boolean
     	if (e.type != "Boolean") {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	Map<CuVvc,CuType> mut_copy = new HashMap<CuVvc,CuType> (arg_mut);
     	Map<CuVvc,CuType> new_mut = s1.typeCheck(mut_copy);
@@ -175,6 +223,11 @@ class WhileStat extends CuStat{
     		out_mut.put(key, tCom);
     	}
     	return out_mut;
+    }
+    public HReturn calculateType() {
+    	HReturn re = s1.calculateType();
+    	re.b = false;
+    	return re;
     }
 }
 
