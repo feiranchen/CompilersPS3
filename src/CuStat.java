@@ -135,11 +135,7 @@ class IfStat extends CuStat{
     		if (t2 != null){
     			t1 = mut1.get(key);
     			//get the lowest common type
-<<<<<<< HEAD
-    			tCom = CuType.commonParent(t, t2);
-=======
     			tCom = CuType.commonParent(t1, t2);
->>>>>>> 5863420feb80ee7c63d26b0a9a3cefb56999a3d1
     			outMut.put(key, tCom);
     		}
     	}
