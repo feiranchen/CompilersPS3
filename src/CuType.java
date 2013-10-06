@@ -3,6 +3,8 @@ import java.util.List;
 
 public abstract class CuType {
 	protected String text = "";
+	public String data_s;
+	public List<CuType> pt;
 	@Override public String toString() {
 		return text;
 	}
@@ -13,19 +15,19 @@ public abstract class CuType {
 }
 
 class VClass extends CuType {
-	String data_s;
-	List<CuType> pt;
+	//String data_s;
+	//List<CuType> pt;
 	public VClass(String s, List<CuType> pt){
-		data_s=s;
-		this.pt = pt;
+		super.data_s=s;
+		super.pt = pt;
 		super.text=data_s+ " "+ Helper.printList("<", pt, ">", ",");
 	}
 }
 
 class VTopBot extends CuType {
-	String data_s;
+	//String data_s;
 	public VTopBot(String s){
-		data_s=s;
+		super.data_s=s;
 		super.text=s;
 	}
 }
@@ -41,9 +43,9 @@ class VTypeInter extends CuType {
 }
 
 class VTypePara extends CuType {
-	String data_s;
+	//String data_s;
 	public VTypePara(String s){
-		data_s=s;
+		super.data_s=s;
 		super.text=s;
 	}
 }
