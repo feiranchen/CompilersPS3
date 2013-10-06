@@ -67,7 +67,7 @@ class ForStat extends CuStat{
     		throw new UnsupportedOperationException();
     	}
     	//eType = (VClass)eType;
-    	if (eType.data_s != "Iterable") {
+    	if (eType.val.equals("Iterable")) {
     		throw new UnsupportedOperationException();
     	}
     	//my understanding is var can't appear in mutable variables
@@ -78,7 +78,7 @@ class ForStat extends CuStat{
     	if (immut.containsKey(var)) {
     		throw new UnsupportedOperationException();
     	}
-    	CuType iter_type = eType.pt.get(0);
+    	CuType iter_type = eType.getFirstArgument();
     	Map<CuVvc,CuType> mut_cpy = new HashMap<CuVvc,CuType>(arg_mut);
     	mut_cpy.put(var, iter_type);
     	Map<CuVvc,CuType> new_mut = s1.typeCheck(mut_cpy);
@@ -119,7 +119,7 @@ class IfStat extends CuStat{
     public Map<CuVvc,CuType> typeCheck(Map<CuVvc,CuType> arg_mut) {
     	//check whether e is boolean
     	if (e.type != "Boolean") {
-    		throw new UnsupportedOperationException();
+    		throw new NoSuchTypeException();
     	}
     	Map<CuVvc,CuType> mut_cpy1 = new HashMap<CuVvc,CuType>(arg_mut);
     	Map<CuVvc,CuType> mut_cpy2 = new HashMap<CuVvc,CuType>(arg_mut);
@@ -135,7 +135,11 @@ class IfStat extends CuStat{
     		if (t2 != null){
     			t1 = mut1.get(key);
     			//get the lowest common type
+<<<<<<< HEAD
     			tCom = CuType.commonParent(t, t2);
+=======
+    			tCom = CuType.commonParent(t1, t2);
+>>>>>>> 5863420feb80ee7c63d26b0a9a3cefb56999a3d1
     			outMut.put(key, tCom);
     		}
     	}

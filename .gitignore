@@ -14,6 +14,7 @@
 .classpath
 .project
 .class
+Makefile
 src/CubexLexer2.java
 src/CubexLexer2.tokens
 src/CubexParser2.java
