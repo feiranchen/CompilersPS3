@@ -1,13 +1,14 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 
-/*** wild type??? */
 /** class declaration add type */
-
 public abstract class CuType {
 	protected static CuType top = new Top();
 	protected static CuType bottom = new Bottom();
@@ -16,8 +17,10 @@ public abstract class CuType {
 	protected static CuType character = new Char();
 	protected static CuType string = new Str();
 	protected List<CuType> parentType;
-	protected Object val = ""; // value field of each type, e.g. Iter.val is HashSet<E>, Int.val is Integer
+	protected String id;
 	protected String text = "";
+	protected Map<VTypePara, CuType> map = new LinkedHashMap<VTypePara, CuType>();// plugin generic types
+	protected CuType type = bottom; // for Iterable<>
 
 	CuType(){ changeParent(top); }
 
@@ -43,12 +46,12 @@ public abstract class CuType {
 	public CuType getArgument() throws NoSuchTypeException {
 		throw new NoSuchTypeException();
 	}
-	public boolean plugIn(List<CuType> t) { return false;}
-	public boolean plugIn(Map<VTypePara, CuType> t) {return false;}
+	public Map<VTypePara, CuType> plugIn(List<CuType> t) { return map;}
+	public Map<VTypePara, CuType> plugIn(Map<VTypePara, CuType> t) {return map;}
 	
 	// Hierarchy of types
 	public boolean equals(Object that) { return equals((CuType)that); }
-	public boolean equals(CuType that) { return val.equals(that.val); }
+	abstract public boolean equals(CuType that);
 	public boolean isSubtypeOf(CuType that) {
 		if (this.equals(that)) return true;
 		for (CuType p : this.parentType) {
@@ -59,8 +62,8 @@ public abstract class CuType {
 	public static CuType commonParent(CuType t1, CuType t2) {
 		if (t1 == null) return t2;
 		if (t2 == null) return t1;
-		List<CuType> parent1 = superTypeList(t1, new ArrayList<CuType>());
-		List<CuType> parent2 = superTypeList(t2, new ArrayList<CuType>());
+		List<CuType> parent1 = superTypeList(t1);
+		List<CuType> parent2 = superTypeList(t2);
 		for (CuType p : parent1) {
 			if (parent2.contains(p)) return p;
 		}
@@ -68,13 +71,21 @@ public abstract class CuType {
 	}
 	public CuType calculateType(CuContext context){throw new NoSuchTypeException();};
 	// find all the super types of n, including itself
-	private static List<CuType> superTypeList(CuType n, List<CuType> l) {
+	public static List<CuType> superTypeList(CuType n) {
+		Queue<CuType> l = new LinkedList<CuType>();
 		l.add(n);
-		if (n.isTop()) { return l;}
-		for (CuType p : n.parentType) {
-			superTypeList(p, l);
+		List<CuType> p = new ArrayList<CuType>();
+		while (!l.isEmpty()) {
+			CuType t = l.peek();
+			p.add(t);
+			for (CuType x : t.parentType) {
+				if (!x.isTop() && !p.contains(x)) {
+					l.add(x);
+				}
+			}
 		}
-		return l;
+		if (!p.contains(top)) p.add(top);
+		return p;
 	}
 	
 	@Override public String toString() { return text;}
@@ -84,11 +95,9 @@ public abstract class CuType {
  * determine is a class or an interface: isClassOrInterface()
  */
 class VClass extends CuType {
-	protected Map<VTypePara, CuType> map = new LinkedHashMap<VTypePara, CuType>();// plugin generic types
-	protected CuType type = bottom; // for Iterable<>
 	protected boolean isInterface = false;
 	public VClass(String s, List<CuType> pt, Boolean intf){
-		val = new Vc(s);
+		super.id = s;
 		for (CuType t: pt) {
 			if (t.isTypePara()) {
 				map.put((VTypePara)t, CuType.bottom);
@@ -97,15 +106,15 @@ class VClass extends CuType {
 			}
 		}
 		isInterface = intf;
-		super.text=val.toString()+ " "+ Helper.printList("<", pt, ">", ",");
+		super.text=super.id+ " "+ Helper.printList("<", pt, ">", ",");
 	}
 	@Override public CuType calculateType(CuContext context) {
 		if (this.isInterface()) return CuType.top;
 		else return this;
 	}
-	/* instantiate this class */
-	@Override public boolean plugIn(List<CuType> t) {
-		if(map.size() != t.size()) {return false;}
+	/* instantiate this class, strict plug in */
+	@Override public Map<VTypePara, CuType> plugIn(List<CuType> t) {
+		if(map.size() != t.size()) {throw new NoSuchTypeException();}
 		int i = 0;
 		for (Entry<VTypePara, CuType> k : map.entrySet()) {
 			if(t.get(i).isTypePara()) {
@@ -114,17 +123,16 @@ class VClass extends CuType {
 			k.setValue(t.get(i));
 			i++;
 		}
-		return true;
+		return this.map;
 	}
-	@Override public boolean plugIn(Map<VTypePara, CuType> t) {
+	@Override public Map<VTypePara, CuType> plugIn(Map<VTypePara, CuType> t) {
 		for (Entry<VTypePara, CuType> p : t.entrySet()) {
 			VTypePara k = p.getKey();
-			if (!map.containsKey(k)) {
-				throw new NoSuchTypeException();
+			if (map.containsKey(k)) {
+				map.put(k, p.getValue());// only plugin valid keys
 			}
-			map.put(k, p.getValue());
 		}
-		return true;
+		return this.map;
 	}
 	@Override public boolean isClassOrInterface() {return true;}
 	@Override public boolean isInterface() {return isInterface;}
@@ -143,8 +151,7 @@ class VClass extends CuType {
 			VClass t = (VClass) that;
 			Set<VTypePara> tp1 = this.map.keySet();
 			Set<VTypePara> tp2 = t.map.keySet();
-			return val.equals(t.val) && tp1.equals(tp2)
-					&& type.equals(((VClass) t).type);// for Iterable
+			return super.id.equals(t.id) && tp1.equals(tp2);
 		}
 		return false;
 	}
@@ -152,6 +159,8 @@ class VClass extends CuType {
 		return equals(t) && map.equals(((VClass)t).map); // for generic plug in
 	}
 }
+
+
 class VTypeInter extends CuType {
 	List<CuType> parents = new ArrayList<CuType>();
 	public VTypeInter(CuType t1){
@@ -168,6 +177,17 @@ class VTypeInter extends CuType {
 	@Override public CuType calculateType(CuContext context) {
 		/* type checking */
 		Helper.ToDo("v<tao1, tao2> == v<tao3, tao4>");
+		for(int i = 0; i+1 < parents.size(); i++) {
+			Helper.ToDo("requires function map id->typescheme");
+			Map<String, CuTypeScheme> f1 = context.getFunction(parents.get(i).id).getFuncMap();
+			Map<String, CuTypeScheme> f2 = context.getFunction(parents.get(i+1).id).getFuncMap();
+			Helper.ToDo("requires CuTypeScheme.equals()");
+			for (Entry<String, CuTypeScheme> f : f1.entrySet()) {
+				if(f2.containsKey(f.getKey()) && !f2.get(f.getKey()).equals(f.getValue())) {
+					throw new NoSuchTypeException(); // v:sigma , v:sigma' are not the same
+				}
+			}
+		}
 		Helper.ToDo("check context, method has same typescheme");
 		return parents.get(0).calculateType(context);
 	}
@@ -178,25 +198,30 @@ class VTypeInter extends CuType {
 	@Override public boolean equals(CuType that) {
 		if (that.isIntersect()) {
 			VTypeInter t = (VTypeInter) that;
-			Helper.ToDo("list or set?");
-			return parents.equals(t.parents);
+			return parents.containsAll(t.parents) && t.parents.containsAll(parents);
 		}
 		return false;
 	}
 }
 
+
 class VTypePara extends CuType {
 	public VTypePara(String s){
-		super.val = s;
+		super.id = s;
 		super.text = s;
 	}
 	@Override public boolean isTypePara() {return true;}
+	@Override public boolean equals(CuType that) {
+		return that.isTypePara() && super.id.equals(that.id);
+	}
 }
+
+
 class Iter extends VClass {
 	public Iter(CuType arg) {
-		super(CuVvc.ITERABLE, new ArrayList<CuType> (), false);
+		super(CuVvc.ITERABLE, new ArrayList<CuType> (), false); // id is "Iterable"
 		super.type = arg;
-		super.text=val.toString()+ " <" + arg.toString()+">";
+		super.text=super.id+ " <" + arg.toString()+">";
 		// set its parent types
 		List<CuType> parents = new ArrayList<CuType>();
 		for (CuType t : arg.parentType) {
@@ -206,10 +231,15 @@ class Iter extends VClass {
 		Helper.ToDo("type check Iterable?");
 	}
 	@Override public boolean isIterable() {return true;}
+	@Override public boolean equals(CuType that) {
+		return that.isIterable() && ((VClass)that).type.equals(this.type);
+	}
 	@Override public CuType getArgument() throws NoSuchTypeException {
 		return type;
 	}
 }
+
+
 class Bool extends VClass {
 	public Bool() {
 		super(CuVvc.BOOLEAN, new ArrayList<CuType> (), false);
@@ -236,19 +266,19 @@ class Str extends VClass {
 }
 class Top extends CuType{
 	Top() {
-		super.val = "Thing";
+		super.id = CuVvc.TOP;
 		super.text = "Thing";
 	}
-	@Override public CuType calculateType(CuContext context) {
-		return this;
-	}
+	@Override public CuType calculateType(CuContext context) { return this;}
 	@Override public boolean isTop() {return true;}
+	@Override public boolean equals(CuType that) { return that.isTop();}
 }
 class Bottom extends CuType {
 	public Bottom(){
-		super.val= "Nothing";
+		super.id = CuVvc.BOTTOM;
 		super.text= "Nothing";
 	}
 	@Override public boolean isBottom() {return true;}
 	@Override public boolean isSubtypeOf(CuType t) {return true;}
+	@Override public boolean equals(CuType that) { return that.isBottom();}
 }

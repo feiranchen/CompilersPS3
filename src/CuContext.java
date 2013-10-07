@@ -9,4 +9,7 @@ public class CuContext {
 	public CuFunC getFunction(String name) { return mFunctions.get(name); }
 	public void updateType(String name, CuType value){ mVariables.put(name, value);}
 	public void updateFunction(String name, CuFunC value){ mFunctions.put(name, value);}
+	
+	private Map<String,CuClassC> mClasses = new HashMap<String,CuClassC>();
+	public CuClassC getClass(String name) { return mClasses.get(name); }
 }

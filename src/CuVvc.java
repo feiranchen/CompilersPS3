@@ -1,5 +1,7 @@
 
 public abstract class CuVvc {
+	final static protected String TOP = "Thing";
+	final static protected String BOTTOM = "Nothing";
 	final static protected String ITERABLE = "Iterable";
 	final static protected String BOOLEAN = "Boolean";
 	final static protected String INTEGER = "Integer";
