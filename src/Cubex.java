@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.antlr.v4.runtime.*;
 
@@ -9,6 +11,11 @@ public class Cubex {
 	
 	protected static void getParser(String fn) throws IOException {
 		CubexLexer2 lexer = new CubexLexer2(new ANTLRFileStream(fn));
+		
+		//bound inputs to a variable input, put in context
+		CuContext initContext=initContext();
+		
+		
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		CubexParser2 parser = new CubexParser2(tokens);
 		// altering anltr error messages
@@ -23,5 +30,17 @@ public class Cubex {
 			System.exit(-2);
 		}
 		System.out.println(coreLang);
+	}
+	
+	private static CuContext initContext(){
+		CuContext initContext=new CuContext();
+		
+		
+		
+		
+		updateType(String name, CuType value){ mVariables.put(name, value);}
+		public void updateFunction
+		
+		return initContext;
 	}
 }

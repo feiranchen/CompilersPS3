@@ -26,8 +26,7 @@ public abstract class CuType {
 }
 
 class VClass extends CuType {
-	//String data_s;
-	//List<CuType> pt;
+	
 	public VClass(String s, List<CuType> pt){
 		super.data_s=s;
 		super.pt = pt;

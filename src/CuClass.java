@@ -68,12 +68,14 @@ class Cls extends CuClass {
 
 class Intf extends CuClass{
 	private String intf_name;
-	private String funs = "";
 	private List<String> kc_name;
 	private CuType t;
 	private ArrayList<String> v_names = new ArrayList<String>();
 	private ArrayList<CuTypeScheme> ts_names = new ArrayList<CuTypeScheme>();
+	
 	List<Function> functions=new ArrayList<Function>();
+	private String funs = "";
+	
 	public Intf (String iname, List<String> kname){
 		intf_name = iname;
 		kc_name = kname;

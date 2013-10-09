@@ -6,6 +6,7 @@ options { tokenVocab = CubexLexer2; }
 }
 
 @members {
+<<<<<<< HEAD
   Map<Vv, CuFun>         funCtxt = new HashMap<Vv, CuFun>();
   Map<Vc, CuClass>     classCtxt = new HashMap<Vc, CuClass>(); 
   Map<CuVvc,CuType>        immut = new HashMap<CuVvc,CuType>();
@@ -23,6 +24,8 @@ options { tokenVocab = CubexLexer2; }
     mut       = mutable;
   }
 
+=======
+>>>>>>> d09fd87446fea1d1a2ec6f65c99b23350a31037b
 }
 
 vc returns [CuVvc v]
@@ -37,10 +40,10 @@ kindcontext returns [List<String> kc]
   (COMMA TPARA { $kc.add($TPARA.text); })*)?
   RANGLE)?;
 
-typecontext returns [Map<CuVvc,CuType> tc]
-: {$tc = new HashMap<CuVvc,CuType>(); }
-  LPAREN (v=vv COLON t=type { $tc.put($v.v, $t.t); } 
-  (COMMA v=vv COLON t=type { $tc.put($v.v, $t.t); })*)? 
+typecontext returns [Map<String,CuType> tc]
+: {$tc = new HashMap<String,CuType>(); }
+  LPAREN (VAR COLON t=type { $tc.put($VAR.text, $t.t); } 
+  (COMMA VAR COLON t=type { $tc.put($VAR.text, $t.t); })*)? 
   RPAREN;
 
 paratype returns [List<CuType> pt]
@@ -107,10 +110,10 @@ exprs returns [List<CuExpr> cu]
 
 stat returns [CuStat s]
 : LBRACE ss=stats RBRACE {$s = new Stats($ss.cu);}
-| v=vv ASSIGN e=expr SEMICOLON {$s = new AssignStat($v.v, $e.e, immut);} 
+| v=vv ASSIGN e=expr SEMICOLON {$s = new AssignStat($v.v, $e.e);} 
 | IF LPAREN e=expr RPAREN l=stat {$s = new IfStat($e.e, $l.s);} (ELSE r=stat {$s.add($r.s);})? 
 | WHILE LPAREN e=expr RPAREN st=stat {$s = new WhileStat($e.e, $st.s);}
-| FOR LPAREN v=vv IN e=expr RPAREN st=stat {$s = new ForStat($v.v, $e.e, $st.s, immut);}
+| FOR LPAREN v=vv IN e=expr RPAREN st=stat {$s = new ForStat($v.v, $e.e, $st.s);}
 | (RETURN | EQUAL) e=expr SEMICOLON {$s = new ReturnStat($e.e);};
 
 stats returns [List<CuStat> cu] 
@@ -124,7 +127,7 @@ intf returns [CuClass c] // add to classList? add to funlist
 : INTERFACE CLSINTF p=kindcontext {$c = new Intf($CLSINTF.text, $p.kc); classList.add($c);} 
   (EXTENDS t=type {$c.add($t.t);} 
   LBRACE (FUN v=vv ts=typescheme f=funBody 
-            {$c.add($v.v, $ts.ts, $f.body); functxt.add($v.v, $ts.ts);})* 
+            {$c.add($v.v, $ts.ts, $f.body); })* 
   RBRACE)?;
 
 cls returns [CuClass c] 
@@ -132,13 +135,13 @@ cls returns [CuClass c]
   (EXTENDS t=type {$c.add($t.t);} 
      LBRACE (s=stat {$c.add($s.s);})* 
        (SUPER LPAREN es=exprs RPAREN SEMICOLON {$c.add($es.cu);})? 
-       (FUN vs=vv ts=typescheme f=funBody {$c.add($vs.v, $ts.ts, $f.body); functxt.add($vs.v, $ts.ts);})* 
+       (FUN vs=vv ts=typescheme f=funBody {$c.add($vs.v, $ts.ts, $f.body); })* 
      RBRACE)?;
 
 program returns [CuProgr p]
 : s=stat {$p = new StatPrg($s.s);} (ss=stats pr=program {$p.add($ss.cu, $pr.p);})?
-| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.v, $ts.ts, $s.s); functxt.add($v.v, $ts.ts);}
-  (FUN vs=vv ts=typescheme s=stat {$p.add($vs.v, $ts.ts, $s.s); functxt.add($vs.v, $ts.ts);})* 
+| FUN v=vv ts=typescheme s=stat {$p = new FunPrg($v.v, $ts.ts, $s.s); }
+  (FUN vs=vv tss=typescheme ss=stat {$p.add($vs.v, $tss.ts, $ss.s); })* 
   pr=program {$p.add($pr.p);}
 | i=intf pr=program {$p = new ClassPrg($i.c, $pr.p);}
 | c=cls pr=program {$p = new ClassPrg($c.c, $pr.p);};
