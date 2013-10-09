@@ -192,9 +192,12 @@ class WhileStat extends CuStat{
     }
 }
 
-//Yinglei doesn't think this will be used, correct her if wrong
 class EmptyBody extends CuStat {
 	public EmptyBody(){
 		text=" ;";
+	}
+	public HReturn calculateType(CuContext context) throws NoSuchTypeException {
+		//default is false and bottom
+		return new HReturn();
 	}
 } 

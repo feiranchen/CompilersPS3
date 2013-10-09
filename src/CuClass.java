@@ -2,6 +2,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+//Yinglei worked on the desugared program (core language), in parsing, we should
+//put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
 public abstract class CuClass {
 	protected String text = "";
 	@Override public String toString() {
@@ -13,7 +15,7 @@ public abstract class CuClass {
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
 	public void add(CuVvc v_name, CuTypeScheme ts) {}
-	public void calculateType(CuContext context) {}
+	public void calculateType(CuContext context) throws NoSuchTypeException {}
 }
 
 class Cls extends CuClass {
@@ -65,7 +67,7 @@ class Cls extends CuClass {
 				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
 	}
 	
-	public void calculateType(CuContext context) {
+	@Override public void calculateType(CuContext context) throws NoSuchTypeException {
 		
 	}
 }
@@ -104,7 +106,8 @@ class Intf extends CuClass{
 		text += " { " + funs + " } ";
 		return text;
 	}
-	public void calculateType(CuContext context) {
+	public void calculateType(CuContext context) throws NoSuchTypeException {
+		Helper.ToDo("make sure that the type check returns its constructable component or null");
 		
 	}
 }
