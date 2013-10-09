@@ -6,10 +6,23 @@ options { tokenVocab = CubexLexer2; }
 }
 
 @members {
-  List<CuClass> classList = new ArrayList<CuClass>();
-  CuFunC functxt = new Function();
-  Map<CuVvc,CuType> immut = new HashMap<CuVvc,CuType>();
-  Map<CuVvc,CuType> mut = new HashMap<CuVvc,CuType>();
+  Map<Vv, CuFun>         funCtxt = new HashMap<Vv, CuFun>();
+  Map<Vc, CuClass>     classCtxt = new HashMap<Vc, CuClass>(); 
+  Map<CuVvc,CuType>        immut = new HashMap<CuVvc,CuType>();
+  Map<CuVvc,CuType>          mut = new HashMap<CuVvc,CuType>();
+  List<String>          kindCtxt = new ArrayList<String>();
+  public CubexParser2 (TokenStream input, 
+                          HashMap<Vv, CuFun>       fun,
+                          HashMap<CuType, CuClass> cls,
+                          HashMap<CuVvc, CuType>   immutable,
+                          HashMap<CuVvc, CuType>   mutable) {
+    super(input);
+    funCtxt   = fun;
+    classCtxt = cls;
+    immut     = immutable;
+    mut       = mutable;
+  }
+
 }
 
 vc returns [CuVvc v]

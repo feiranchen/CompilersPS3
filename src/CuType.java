@@ -1,10 +1,11 @@
+import java.util.ArrayList;
 import java.util.List;
 
 
 public abstract class CuType {
 	protected String text = "";
 	public String data_s;
-	public List<CuType> pt;
+	public List<CuType> pt=new ArrayList<CuType>();
 	@Override public String toString() {
 		return text;
 	}
@@ -12,6 +13,16 @@ public abstract class CuType {
 // TODO Auto-generated method stub
 		return null;
 	}
+	
+	
+	//public boolean equals(Object that) { return equals((XiType)that); }
+	//public boolean equals(XiType that) { return this == that; }
+	//public boolean isSubtypeOf(XiType that) { return equals(that); }
+
+	public boolean isBool() { return false; }
+	public boolean isInt() { return false; }
+	public boolean isArray() { return false; }
+	
 }
 
 class VClass extends CuType {
@@ -49,3 +60,28 @@ class VTypePara extends CuType {
 		super.text=s;
 	}
 }
+
+//==============Basic Types==================
+class VBool extends VClass {
+	public VBool(String s, List<CuType> pt) {
+		super("Boolean", new ArrayList<CuType>());
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override public boolean isBool() { return true; }
+}
+
+class VInt extends VClass {
+	public VInt(String s, List<CuType> pt) {
+		super("Integer", new ArrayList<CuType>());
+	}
+	@Override public boolean isInt() { return true; }
+}
+
+class XiArray extends VClass {
+	private XiType mElemType;
+	public XiArray(XiType elemType) { mElemType = elemType; }
+	public boolean isArray() { return true; }
+	public XiType getArrayArgument() throws NoSuchTypeException {
+		return mElemType;
+	}

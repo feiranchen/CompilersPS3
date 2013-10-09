@@ -59,10 +59,23 @@ public class CubexParser2 extends Parser {
 	public ATN getATN() { return _ATN; }
 
 
-	  List<CuClass> classList = new ArrayList<CuClass>();
-	  CuFunC functxt = new Function();
-	  Map<CuVvc,CuType> immut = new HashMap<CuVvc,CuType>();
-	  Map<CuVvc,CuType> mut = new HashMap<CuVvc,CuType>();
+	  Map<Vv, CuFun>         funCtxt = new HashMap<Vv, CuFun>();
+	  Map<CuType, CuClass> classCtxt = new HashMap<CuType, CuClass>(); 
+	  Map<CuVvc,CuType>        immut = new HashMap<CuVvc,CuType>();
+	  Map<CuVvc,CuType>          mut = new HashMap<CuVvc,CuType>();
+	  List<String>          kindCtxt = new ArrayList<String>();
+	  public CubexParser2 (TokenStream input, 
+	                          HashMap<Vv, CuFun>       fun,
+	                          HashMap<CuType, CuClass> cls,
+	                          HashMap<CuVvc, CuType>   immutable,
+	                          HashMap<CuVvc, CuType>   mutable) {
+	    super(input);
+	    funCtxt   = fun;
+	    classCtxt = cls;
+	    immut     = immutable;
+	    mut       = mutable;
+	  }
+
 
 	public CubexParser2(TokenStream input) {
 		super(input);
@@ -964,7 +977,6 @@ public class CubexParser2 extends Parser {
 		public StatContext l;
 		public StatContext r;
 		public StatContext st;
-		public Token VAR;
 		public TerminalNode LBRACE() { return getToken(CubexParser2.LBRACE, 0); }
 		public TerminalNode SEMICOLON() { return getToken(CubexParser2.SEMICOLON, 0); }
 		public VvContext vv() {
@@ -985,7 +997,6 @@ public class CubexParser2 extends Parser {
 		}
 		public TerminalNode ELSE() { return getToken(CubexParser2.ELSE, 0); }
 		public TerminalNode ASSIGN() { return getToken(CubexParser2.ASSIGN, 0); }
-		public TerminalNode VAR() { return getToken(CubexParser2.VAR, 0); }
 		public TerminalNode RPAREN() { return getToken(CubexParser2.RPAREN, 0); }
 		public TerminalNode RETURN() { return getToken(CubexParser2.RETURN, 0); }
 		public StatsContext stats() {
@@ -1063,12 +1074,12 @@ public class CubexParser2 extends Parser {
 				{
 				setState(262); match(FOR);
 				setState(263); match(LPAREN);
-				setState(264); ((StatContext)_localctx).VAR = match(VAR);
+				setState(264); ((StatContext)_localctx).v = vv();
 				setState(265); match(IN);
 				setState(266); ((StatContext)_localctx).e = expr(0);
 				setState(267); match(RPAREN);
 				setState(268); ((StatContext)_localctx).st = stat();
-				((StatContext)_localctx).s =  new ForStat((((StatContext)_localctx).VAR!=null?((StatContext)_localctx).VAR.getText():null), ((StatContext)_localctx).e.e, ((StatContext)_localctx).st.s);
+				((StatContext)_localctx).s =  new ForStat(((StatContext)_localctx).v.v, ((StatContext)_localctx).e.e, ((StatContext)_localctx).st.s, immut);
 				}
 				break;
 			case RETURN:
@@ -1779,7 +1790,7 @@ public class CubexParser2 extends Parser {
 		"\2\u00ff\u00fb\3\2\2\2\u00ff\u0100\3\2\2\2\u0100\u0117\3\2\2\2\u0101\u0102"+
 		"\7\6\2\2\u0102\u0103\7\33\2\2\u0103\u0104\5\20\t\2\u0104\u0105\7\34\2"+
 		"\2\u0105\u0106\5\24\13\2\u0106\u0107\b\13\1\2\u0107\u0117\3\2\2\2\u0108"+
-		"\u0109\7\7\2\2\u0109\u010a\7\33\2\2\u010a\u010b\7\25\2\2\u010b\u010c\7"+
+		"\u0109\7\7\2\2\u0109\u010a\7\33\2\2\u010a\u010b\5\4\3\2\u010b\u010c\7"+
 		"\b\2\2\u010c\u010d\5\20\t\2\u010d\u010e\7\34\2\2\u010e\u010f\5\24\13\2"+
 		"\u010f\u0110\b\13\1\2\u0110\u0117\3\2\2\2\u0111\u0112\t\n\2\2\u0112\u0113"+
 		"\5\20\t\2\u0113\u0114\7\36\2\2\u0114\u0115\b\13\1\2\u0115\u0117\3\2\2"+
