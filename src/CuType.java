@@ -69,7 +69,7 @@ public abstract class CuType {
 		}
 		return top;
 	}
-	public CuType calculateType(CuContext context){throw new NoSuchTypeException();};
+	public CuType calculateType(CuContext context) throws NoSuchTypeException { return null;}
 	// find all the super types of n, including itself
 	public static List<CuType> superTypeList(CuType n) {
 		Queue<CuType> l = new LinkedList<CuType>();
@@ -174,7 +174,7 @@ class VTypeInter extends CuType {
 		parents.add(t);
 		super.text += " \u222A "+t.toString();
 	}
-	@Override public CuType calculateType(CuContext context) {
+	@Override public CuType calculateType(CuContext context) throws NoSuchTypeException {
 		/* type checking */
 		Helper.ToDo("v<tao1, tao2> == v<tao3, tao4>");
 		for(int i = 0; i+1 < parents.size(); i++) {
@@ -213,6 +213,12 @@ class VTypePara extends CuType {
 	@Override public boolean isTypePara() {return true;}
 	@Override public boolean equals(CuType that) {
 		return that.isTypePara() && super.id.equals(that.id);
+	}
+	public CuType calculateType(CuContext context) throws NoSuchTypeException {
+		if (!context.hasVTypePara(super.id)){
+			throw new NoSuchTypeException();
+		}
+		return null;
 	}
 }
 

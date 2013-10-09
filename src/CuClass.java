@@ -13,7 +13,7 @@ public abstract class CuClass {
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
 	public void add(CuVvc v_name, CuTypeScheme ts) {}
-	
+	public void calculateType(CuContext context) {}
 }
 
 class Cls extends CuClass {
@@ -64,6 +64,10 @@ class Cls extends CuClass {
 				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
 				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
 	}
+	
+	public void calculateType(CuContext context) {
+		
+	}
 }
 
 class Intf extends CuClass{
@@ -99,5 +103,8 @@ class Intf extends CuClass{
 	@Override public String toString() {
 		text += " { " + funs + " } ";
 		return text;
+	}
+	public void calculateType(CuContext context) {
+		
 	}
 }

@@ -16,12 +16,15 @@ public class Cubex {
 		parser.addErrorListener(new ParserErrorListener(false)); //prevent printing debugging messages
 		
 		String coreLang = null;
+		CuContext context = new CuContext();
+		//if we want to add initial context elements, we should add them here
+		//to be consistent, I also used calculateType
 		try {
-			coreLang = parser.program().p.toString();
+			parser.program().p.calculateType(context);
 		} catch (Exception e) {
-			System.out.println("parser error");
+			System.out.println("rejected");
 			System.exit(-2);
 		}
-		System.out.println(coreLang);
+		System.out.println("accepted");
 	}
 }

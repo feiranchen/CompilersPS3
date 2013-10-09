@@ -148,7 +148,7 @@ class ReturnStat extends CuStat{
 }
 
 class Stats extends CuStat{
-	protected ArrayList<CuStat> al;
+	public ArrayList<CuStat> al = new ArrayList<CuStat>();
 	public Stats (List<CuStat> cu) {
 		al = (ArrayList<CuStat>) cu;
 		text = "{ " + Helper.listFlatten(al) + " }";
