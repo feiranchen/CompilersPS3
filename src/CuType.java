@@ -76,7 +76,7 @@ public abstract class CuType {
 		l.add(n);
 		List<CuType> p = new ArrayList<CuType>();
 		while (!l.isEmpty()) {
-			CuType t = l.peek();
+			CuType t = l.poll();
 			p.add(t);
 			for (CuType x : t.parentType) {
 				if (!x.isTop() && !p.contains(x)) {
