@@ -11,11 +11,11 @@ public abstract class CuClass {
 	String name;
 	CuType            superType = new Top();
 	CuContext               cTxt= new CuContext();
+	List<CuExpr>        superArg;
 	List<CuStat> classStatement = new ArrayList<CuStat>();
-	Map<String, CuFun> funList  = new HashMap<String, CuFun>();
+	HashMap<String, CuFun>  funList = new HashMap<String, CuFun>();
 	List<String>       kindPara = null;
 	List<String>      fieldPara = new ArrayList<String>();
-	List<CuExpr> superArg;
 	Map<String, CuType> fieldTypes=new HashMap<String,CuType>();
 	
 	List<CuType> appliedTypePara=new ArrayList<CuType>();
@@ -47,8 +47,47 @@ class Cls extends CuClass {
 	}
 
 	//TODO: grab all the methods here
-	@Override public void addSuper (CuType t) {
-		superType = t;
+	@Override public void addSuper (CuType tt) {
+		superType = tt;
+		if (superType instanceof VClass){
+			Map<String, CuFun> superfunLst= cTxt.mClasses.get(tt.id).funList;
+			for (Map.Entry<String, CuFun> e : superfunLst.entrySet()){
+				//check signature if already exists
+				if (cTxt.mFunctions.containsKey(e.getKey())){
+					//check signature
+					e.getValue().ts.calculateType(cTxt);
+					if (!e.getValue().ts.equals(cTxt.mFunctions.containsKey(e.getKey()))){
+						throw new NoSuchTypeException();}
+				}else{//add method if it doesn't already exist
+					cTxt.updateFunction(e.getKey(),e.getValue().ts);
+					funList.put(e.getKey(), e.getValue());
+				}
+			}
+		}
+		else if(superType instanceof VTypeInter) {
+			for (CuType t:superType.parentType){
+				Map<String, CuFun> superfunLst= cTxt.mClasses.get(t.id).funList;
+				for (Map.Entry<String, CuFun> e : superfunLst.entrySet()){
+					//check signature if already exists
+					if (cTxt.mFunctions.containsKey(e.getKey())){
+						//check signature
+						e.getValue().ts.calculateType(cTxt);
+						if (!e.getValue().ts.equals(cTxt.mFunctions.containsKey(e.getKey()))){
+							throw new NoSuchTypeException();}
+					}else{//add method if it doesn't already exist
+						cTxt.updateFunction(e.getKey(),e.getValue().ts);
+						funList.put(e.getKey(), e.getValue());
+					}
+				}
+			}
+		}
+		else if(superType instanceof VTypePara) {
+			
+		}
+		else if(superType instanceof Iter) {
+			
+		}	
+		else { throw new NoSuchTypeException();}
 	}
 	
 	@Override public void add (CuStat s) {
@@ -62,6 +101,7 @@ class Cls extends CuClass {
 		//for (CuExpr ex : s){
 		//	cTxt.updateMutType(name, value)
 		//}
+		
 	}
 	
 	@Override public void addFun(String v, CuTypeScheme ts, CuStat s) {
@@ -103,21 +143,43 @@ class Intf extends CuClass{
 	@Override
 	
 	public void addSuper (CuType tt) throws NoSuchTypeException{
-		superType = tt;
-		//TODO: grab all the methods here
-		//tt.calculateType(cTxt).isTop()&&
-		if (tt instanceof VClass){
-				cTxt.mClasses.containsKey(tt.id)){
-			Map<String, CuFun> cTxt.mClasses.get(tt.id).funList;
+		superType = tt.calculateType(cTxt);
+		if (superType instanceof VClass){
+			Map<String, CuFun> superfunLst= cTxt.mClasses.get(tt.id).funList;
+			for (Map.Entry<String, CuFun> e : superfunLst.entrySet()){
+				//check signature if already exists
+				if (cTxt.mFunctions.containsKey(e.getKey())){
+					//check signature
+					e.getValue().ts.calculateType(cTxt);
+					if (!e.getValue().ts.equals(cTxt.mFunctions.containsKey(e.getKey()))){
+						throw new NoSuchTypeException();}
+				}else{//add method if it doesn't already exist
+					cTxt.updateFunction(e.getKey(),e.getValue().ts);
+					funList.put(e.getKey(), e.getValue());
+				}
+			}
 		}
-		else if(tt instanceof VTypeInter) {
-			tt=(VTypeInter)tt;
-		    
+		else if(superType instanceof VTypeInter) {
+			for (CuType t:superType.parentType){
+				Map<String, CuFun> superfunLst= cTxt.mClasses.get(t.id).funList;
+				for (Map.Entry<String, CuFun> e : superfunLst.entrySet()){
+					//check signature if already exists
+					if (cTxt.mFunctions.containsKey(e.getKey())){
+						//check signature
+						e.getValue().ts.calculateType(cTxt);
+						if (!e.getValue().ts.equals(cTxt.mFunctions.containsKey(e.getKey()))){
+							throw new NoSuchTypeException();}
+					}else{//add method if it doesn't already exist
+						cTxt.updateFunction(e.getKey(),e.getValue().ts);
+						funList.put(e.getKey(), e.getValue());
+					}
+				}
+			}
 		}
-		else if(tt instanceof VTypePara) {
+		else if(superType instanceof VTypePara) {
 			
 		}
-		else if(tt instanceof Iter) {
+		else if(superType instanceof Iter) {
 			
 		}	
 		else { throw new NoSuchTypeException();}
@@ -131,14 +193,8 @@ class Intf extends CuClass{
 	
 	@Override public CuClass calculateType(CuContext context) throws NoSuchTypeException {
 		Helper.ToDo("make sure that the type check returns its constructable component or null");
-		typeCheck();
+		//typeCheck();
 		return this;
-	}
-	private void typeCheck() throws NoSuchTypeException{
-		if (superType
-				){
-			
-		}
 	}
 
 	@Override public boolean isInterface() {return true; }
