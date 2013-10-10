@@ -220,7 +220,7 @@ class Iter extends VClass {
 	public Iter(CuType arg) {
 		super(CuVvc.ITERABLE, new ArrayList<CuType> ()); // id is "Iterable"
 		super.type = arg;
-		super.text=super.id+ " <" + arg.toString()+">";
+		super.text=super.id+ " < " + arg.toString()+" >";
 		// set its parent types
 		List<CuType> parents = new ArrayList<CuType>();
 		for (CuType t : arg.parentType) {

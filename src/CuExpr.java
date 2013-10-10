@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 
 public abstract class CuExpr {
@@ -386,8 +387,8 @@ class VarExpr extends CuExpr{
 		CuType tHat = val.getType(context); // 1st line in Figure 5 exp
 		CuTypeScheme ts = context.mClasses.get(tHat.id).cTxt.mFunctions.get(method);
 		List<CuType> tList = new ArrayList<CuType>();
-		for (String s : ts.data_arg) {
-			tList.add(ts.data_tc.get(s));
+		for (Entry<String, CuType> e : ts.data_tc.entrySet()) {
+			tList.add(e.getValue());
 		}
 		for (int i = 0; i < es.size(); i++) {
 			if (!es.get(i).isTypeOf(context, tList.get(i), types))
@@ -413,8 +414,8 @@ class VcExp extends CuExpr {
 		if (context.getFunction(val) == null) throw new NoSuchTypeException();
 		// check each es 
 		List<CuType> tList = new ArrayList<CuType>();
-		for (String s : context.mClasses.get(val).fieldPara) {
-			tList.add(context.mClasses.get(val).fieldTypes.get(s));
+		for (Entry<String, CuType> e : context.mClasses.get(val).fieldTypes.entrySet()) {
+			tList.add(e.getValue());
 		}
 		for (int i = 0; i < es.size(); i++) {
 			if (!es.get(i).isTypeOf(context, tList.get(i), types))
@@ -448,8 +449,8 @@ class VvExp extends CuExpr{
 		// check each es 
 		CuType t = super.getClassType(context.mClasses.get(val));
 		List<CuType> tList = new ArrayList<CuType>();
-		for (String s : context.mClasses.get(val).fieldPara) {
-			tList.add(context.mClasses.get(val).fieldTypes.get(s));
+		for (Entry<String, CuType> e : context.mClasses.get(val).fieldTypes.entrySet()) {
+			tList.add(e.getValue());
 		}
 		for (int i = 0; i < es.size(); i++) {
 			if (!es.get(i).isTypeOf(context, tList.get(i), types))
