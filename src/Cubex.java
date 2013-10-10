@@ -24,7 +24,7 @@ public class Cubex {
 		
 		String coreLang = null;
 		try {
-			coreLang = parser.top().cu.toString();
+			coreLang = parser.program().p.toString();
 		} catch (Exception e) {
 			System.out.println("parser error");
 			System.exit(-2);
@@ -34,13 +34,6 @@ public class Cubex {
 	
 	private static CuContext initContext(){
 		CuContext initContext=new CuContext();
-		
-		
-		
-		
-		updateType(String name, CuType value){ mVariables.put(name, value);}
-		public void updateFunction
-		
 		return initContext;
 	}
 }

@@ -38,9 +38,11 @@ paratype returns [List<CuType> pt]
   (COMMA t=type {$pt.add($t.t);})*)? RANGLE)?;	
 
 type returns [CuType t]
-: v = (TPARA | THING | NOTHING) {$t = $v.type== TPARA ? new VTypePara($v.text) : new VTopBot($v.text);}
+: v = TPARA {$t = new VTypePara($v.text);}
+| THING {$t = new Top();}
+| NOTHING {$t = new Bottom();}
 | CLSINTF p=paratype {$t = new VClass($CLSINTF.text, $p.pt);}
-| l=type AMPERSAND r=type {$t = new VTypeInter($l.t, $r.t);};
+| l=type AMPERSAND r=type {$t = new VTypeInter($l.t); $t.add($r.t);};
 
 typescheme returns [CuTypeScheme ts]
 : kc=kindcontext tc=typecontext COLON t=type {$ts = new TypeScheme($kc.kc, $tc.tc, $t.t);};
@@ -132,5 +134,5 @@ program returns [CuProgr p]
 | i=intf pr=program {$p = new ClassPrg($i.c, $pr.p);}
 | c=cls pr=program {$p = new ClassPrg($c.c, $pr.p);};
 
-top returns [CuTop cu]
-: p=program EOF {$cu = new Top($p.p);};
+top 
+: program EOF;
