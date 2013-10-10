@@ -13,6 +13,7 @@ public class CuContext {
 	private Map<String,CuType> mVariables;
 	//mMutVariables are the mutable variables
 	private Map<String,CuType> mMutVariables;
+	final static CuContext Empty=new CuContext();
 	
 	public CuContext () {
 		this.mClasses = new HashMap<String,CuClass>();
@@ -47,7 +48,6 @@ public class CuContext {
 
 	public List<String> getKindList() { return mKind; }
 	
-	public ClsContextEle getClass(String name) { return mClasses.get(name); }
 	
 	//this function merges the mutable variables to immutable variables
 	//this function is created because a lot of times we don't need to distinguish immutable variables
@@ -72,85 +72,43 @@ public class CuContext {
     }
     //check if this type parameter is in kind context
     public boolean hasVTypePara(String name) {
-    	return this.kc.contains(name);
+    	return this.mKind.contains(name);
     }
     public void updateKc(List<String> kc) {
-    	this.kc.addAll(kc);
+    	this.mKind.addAll(kc);
     }
     public void updateMutType(Map<String,CuType> mutVar){ mMutVariables.putAll(mutVar);}
     
     
     private void init(){
-
-		//======Class init=========
-
-		//private Map<String,CuClass> mClasses;
-		//public Cls(Vc name, List<String> kc, Map<CuVvc, CuType> tc, CuContext outsideCtxt);
-		final CuContext ctxt=new CuContext();
-		class VBoolean extends Cls {
-			Boolean v=false;
-			public VBoolean(Boolean val) {
-				super("Boolean", new ArrayList<String>(), new HashMap<String, CuType>(), ctxt);
-				if (val instanceof Boolean) { v=val; }
-				else { throw new NoSuchTypeException();}
-			}
-
-			public boolean calculateType() { return v; }
-		}
-
-		class VInteger extends Cls {
-			Integer v=0;
-			public VInteger(Integer val) {
-				super("Integer", new ArrayList<String>(), new HashMap<String, CuType>(), ctxt);
-				if (val instanceof Integer) { v=val; }
-				else { throw new NoSuchTypeException();}
-			}
-			public int calculateType() { return v; }
-		}
-
-		class VCharacter extends Cls {
-			Character c;
-			public VCharacter(Character val) {
-				super("Character", new ArrayList<String>(), new HashMap<String, CuType>(), ctxt);
-				if (val instanceof Character) { c=val; }
-				else { throw new NoSuchTypeException();}
-			}
-			public char calculateType() { return c; }
-		}
-		
-		class VString extends Cls {
-			String v="";
-			public VString(String val) {
-				super("String", new ArrayList<String>(), new HashMap<String, CuType>(), ctxt);
-				if (val instanceof String) { v=val; }
-				else { throw new NoSuchTypeException();}
-			}
-		}
-		
-
-		class VIterable extends Cls {
-			public VIterable(List<String> kc) {
-				super("Iterable", kc, new HashMap<CuVvc, CuType>(), ctxt);
-				if (val instanceof String) { v=val; }
-				else { throw new NoSuchTypeException();}
-			}
-		}
-
-		classCtxt.put(key, value)
+    	//=====Class init==========
+    	List<String> tempforIterInit=new ArrayList<String>();
+    	tempforIterInit.add("E");
+		this.mClasses.put("Iterable", new VIterable(tempforIterInit));
+		this.mClasses.put("Boolean", new VBoolean());
+		this.mClasses.put("Integer", new VInteger());
+		this.mClasses.put("Charater", new VCharacter());
+		this.mClasses.put("String", new VString());
 		
 		//=====Function init=======
 		//character
 		HashMap<CuVvc, CuType> tempclassmapForCharFun = new HashMap<CuVvc, CuType>();
-		tempclassmapForChar.put(new Vv("unicode"),new VClass("Character",new ArrayList<CuType>());
-		CuFun chararcterFun= new Function(new Vv("character"),
-					new TypeScheme(new ArrayList({"unicode"}), 
+		//tempclassmapForChar.put(new Vv("unicode"),new VClass("Character",new ArrayList<CuType>());
+		//CuFun chararcterFun= new Function(new Vv("character"),
+		//public TypeScheme(List<String> kc, Map<String, CuType> tc , CuType t){
+		//VClass(String s, List<CuType> pt, Boolean intf)
+		/*TypeScheme chararcterFunTemp = new TypeScheme(new ArrayList<String>(),
+				new HashMap<String,CuType>(){{put("unicode", new );}}, 
 							tempclassmapForCharFun, 
 							new VClass("Character",new ArrayList<CuType>()),
 				  new EmptyBody()); 
-		);
+		);*/
 		//string
-		funCtxt.put(character, value)
+
+		//private Map<String,CuTypeScheme> mFunctions;
+		//mFunctions.put("character", chararcterFunTemp);
 		//=====Type init===========
+		
 	}
 }
 
@@ -170,5 +128,5 @@ class ClsContextEle {
 		this.superType = CuType.top;
 		this.mFunctions = new HashMap<String, CuTypeScheme>();
 	}
-	*/
 }
+	*/

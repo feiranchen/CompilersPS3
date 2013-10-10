@@ -3,6 +3,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//Yinglei worked on the desugared program (core language), in parsing, we should
+//put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
 public abstract class CuClass {
 	protected String text = "";
 	@Override public String toString() {
@@ -14,12 +16,12 @@ public abstract class CuClass {
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
 	public void add(CuVvc v_name, CuTypeScheme ts) {}
-	
+	public void calculateType(CuContext context) throws NoSuchTypeException {}
 }
 
 class Cls extends CuClass {
 	String name;
-	CuType superType;
+	CuType superType=new Top();
 	CuContext cTxt= new CuContext();
 	List<CuStat> classStatement = new ArrayList<CuStat>();
 	List<CuExpr> superArg;
@@ -76,10 +78,17 @@ class Cls extends CuClass {
 		funList.put(v.toString(),new Function(v,ts,s));
 	}
 	
+
+	/*
 	@Override public String toString() {
 		return String.format("class %s %s %s extends %s { %s super ( %s ) ; %s }", 
-				name, Helper.printList("<", cTxt.getKindList(), ">", ","), /*Helper.printMap("(", tc, ")", ","), */superType.toString(), 
-				Helper.printList("", classStatement, "", ""), Helper.printList("(", superArg, ")", ","));
+				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
+				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
+	}
+	*/
+	
+	@Override public void calculateType(CuContext context) throws NoSuchTypeException {
+		
 	}
 }
 
@@ -119,4 +128,65 @@ class Intf extends CuClass{
 		text += " { " + funs + " } ";
 		return text;
 	}
+	public void calculateType(CuContext context) throws NoSuchTypeException {
+		Helper.ToDo("make sure that the type check returns its constructable component or null");
+		
+	}
 }
+
+//======Class init=========
+
+class VBoolean extends Cls {
+	Boolean v=false;
+	public VBoolean() {
+		super("Boolean", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Boolean) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+
+	public boolean calculateType() { return v; }
+}
+
+class VInteger extends Cls {
+	Integer v=0;
+	public VInteger() {
+		super("Integer", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Integer) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	public VInteger calculateType() { return this; }
+}
+
+class VCharacter extends Cls {
+	Character c;
+	public VCharacter() {
+		super("Character", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Character) { c=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	public VCharacter calculateType() { return this; }
+}
+
+class VString extends Cls {
+	String v="";
+	public VString() {
+		super("String", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof String) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+
+	public VString calculateType() { return this; }
+}
+
+
+class VIterable extends Cls {
+	List<CuType> v;
+	public VIterable(List<String> kc) {
+		super("Iterable", kc, new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof List<CuType>) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	
+	public VIterable calculateType() { return this; }
+}
+
