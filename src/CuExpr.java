@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -22,27 +23,30 @@ public abstract class CuExpr {
 		Helper.ToDo("requires function map id->typescheme");
 		Helper.ToDo("leave this to function?");
 		// get the functions of left class
-		Map<String, CuTypeScheme> funcs = context.getFunction(leftId).getFuncMap();
+		Map<String, CuTypeScheme> funcs = context.mClasses.get(leftId).mFunctions;
 		// check the method typescheme
 		CuTypeScheme ts = funcs.get(methodId);
-		CuType tR = context.getClass(leftId).calculateType(context);
+		CuClass right = context.mClasses.get(rightId);
 		/** if this method exists, kindcontext is <>, and type scheme matches with input */
-		if (ts != null && ts.getKindContext.isEmpty() && ts.isValid(rightId, tR)) {
-			return ts.calculateType(context);
+		if (ts != null && ts.data_kc.isEmpty() && getClassType(right).equals(ts.data_t)) {
+			return ts.data_t;
 		}
 		throw new NoSuchTypeException();
 	}
 
+	protected static CuType getClassType(CuClass c) {
+		return new VClass(c.name, c.appliedTypePara);
+	}
 	protected CuType unaryExprType(CuContext context, String id, String methodId) throws NoSuchTypeException {
 		Helper.ToDo("requires function map id->typescheme");
 		Helper.ToDo("leave this to function?");
 		// get the functions of left class
-		Map<String, CuTypeScheme> funcs = context.getFunction(leftId).getFuncMap();
+		Map<String, CuTypeScheme> funcs = context.mClasses.get(id).mFunctions;
 		// check the method typescheme
 		CuTypeScheme ts = funcs.get(methodId);
 		/** if this method exists, kindcontext is <>, and type scheme is () */
-		if (ts != null && ts.getKindContext.isEmpty() && ts.isEmpty()) {
-			return ts.calculateType(context);
+		if (ts != null && ts.data_kc.isEmpty() && ts.data_tc.isEmpty()) {
+			return ts.data_t;
 		}
 		throw new NoSuchTypeException();
 	}
@@ -50,7 +54,7 @@ public abstract class CuExpr {
 	protected Boolean isTypeOf(CuContext context, CuType t) {
 		return this.getType(context).isSubtypeOf(t);
 	}
-	protected Boolean isTypeOf(CuContext context, CuType t, Map<VTypePara, CuType> map) {
+	protected Boolean isTypeOf(CuContext context, CuType t, List<CuType> map) {
 		CuType type = this.getType(context);
 		type.plugIn(map);
 		return type.isSubtypeOf(t);
@@ -178,7 +182,7 @@ class EqualExpr extends CuExpr{
 	@Override protected CuType calculateType(CuContext context) throws NoSuchTypeException {
 		CuType t = binaryExprType(context, left.getType(context).id, super.methodId, right.getType(context).id);
 		if (method2 != null) {
-			return context.getFunction(t.id).getFunc(method2).calculateType(context);
+			return context.mFunctions.get(method2).data_t;
 		}
 		return t;
 	}
@@ -379,22 +383,17 @@ class VarExpr extends CuExpr{
 				Helper.printList("<", this.types, ">", ","), Helper.printList("(", this.es, ")", ","));
 	}
 	@Override protected CuType calculateType(CuContext context) {
-		// search the type that has this method
-		List<CuType> typesOfE = CuType.superTypeList(val.getType(context));
-		for (CuType type : typesOfE) {
-			if (context.getFunction(type.id).contains(method)) {
-				CuType t = context.getClass(type.id).calculateType(context);
-				List<CuType> tList = context.getClass(type.id).getArgs();
-				Map<VTypePara, CuType> map= t.plugIn(types);
-				boolean flag = true;
-				for (int i = 0; i < es.size(); i++) {
-					if (!es.get(i).isTypeOf(context, tList.get(i), map))
-						flag = false;
-				}
-				if (flag) return t;
-			}
+		CuType tHat = val.getType(context); // 1st line in Figure 5 exp
+		CuTypeScheme ts = context.mClasses.get(tHat.id).mFunctions.get(method);
+		List<CuType> tList = new ArrayList<CuType>();
+		for (String s : ts.data_arg) {
+			tList.add(ts.data_tc.get(s));
 		}
-		throw new NoSuchTypeException();
+		for (int i = 0; i < es.size(); i++) {
+			if (!es.get(i).isTypeOf(context, tList.get(i), types))
+				throw new NoSuchTypeException();
+		}
+		return ts.data_t;
 	}
 
 }
@@ -413,11 +412,12 @@ class VcExp extends CuExpr {
 		// check tao in scope
 		if (context.getFunction(val) == null) throw new NoSuchTypeException();
 		// check each es 
-		CuType t = context.getClass(val).calculateType(context);
-		List<CuType> tList = context.getClass(val).getArgs();
-		Map<VTypePara, CuType> map= t.plugIn(types);
+		List<CuType> tList = new ArrayList<CuType>();
+		for (String s : context.mClasses.get(val).fieldPara) {
+			tList.add(context.mClasses.get(val).kindPara.get(s));
+		}
 		for (int i = 0; i < es.size(); i++) {
-			if (!es.get(i).isTypeOf(context, tList.get(i), map))
+			if (!es.get(i).isTypeOf(context, tList.get(i), types))
 				throw new NoSuchTypeException();
 		}
 		return t;
@@ -446,11 +446,13 @@ class VvExp extends CuExpr{
 		// check tao in scope
 		if (context.getFunction(val) == null) throw new NoSuchTypeException();
 		// check each es 
-		CuType t = context.getClass(val).calculateType(context);
-		List<CuType> tList = context.getClass(val).getArgs();
-		Map<VTypePara, CuType> map= t.plugIn(types);
+		CuType t = super.getClassType(context.mClasses.get(val));
+		List<CuType> tList = new ArrayList<CuType>();
+		for (String s : context.mClasses.get(val).fieldPara) {
+			tList.add(context.mClasses.get(val).kindPara.get(s));
+		}
 		for (int i = 0; i < es.size(); i++) {
-			if (!es.get(i).isTypeOf(context, tList.get(i), map))
+			if (!es.get(i).isTypeOf(context, tList.get(i), types))
 				throw new NoSuchTypeException();
 		}
 		return t;
