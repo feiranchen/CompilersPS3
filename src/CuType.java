@@ -48,7 +48,7 @@ public abstract class CuType {
 	}
 	public Map<VTypePara, CuType> plugIn(List<CuType> t) { return map;}
 	public Map<VTypePara, CuType> plugIn(Map<VTypePara, CuType> t) {return map;}
-	
+
 	// Hierarchy of types
 	public boolean equals(Object that) { return equals((CuType)that); }
 	abstract public boolean equals(CuType that);
@@ -87,7 +87,7 @@ public abstract class CuType {
 		if (!p.contains(top)) p.add(top);
 		return p;
 	}
-	
+
 	@Override public String toString() { return text;}
 }
 /** determine whether an interface: isInterface() == true
@@ -245,7 +245,7 @@ class Iter extends VClass {
 	}
 }
 
-
+/*
 class Bool extends VClass {
 	public Bool() {
 		super(CuVvc.BOOLEAN, new ArrayList<CuType> (), false);
@@ -270,6 +270,9 @@ class Str extends VClass {
 	}
 	@Override public boolean isString() {return true;}
 }
+*/
+
+
 class Top extends CuType{
 	Top() {
 		super.id = CuVvc.TOP;
@@ -288,3 +291,4 @@ class Bottom extends CuType {
 	@Override public boolean isSubtypeOf(CuType t) {return true;}
 	@Override public boolean equals(CuType that) { return that.isBottom();}
 }
+

@@ -4,19 +4,20 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class CuContext {
-	private Map<String,ClsContextEle> mClasses;
+	private Map<String,CuClass> mClasses;
 	//kind context theta
-	private List<String> kc;
+	private List<String> mKind;
 	//function context is a map with name and type scheme pairs
 	private Map<String,CuTypeScheme> mFunctions;
 	//mVariable are the immutable variables
 	private Map<String,CuType> mVariables;
 	//mMutVariables are the mutable variables
 	private Map<String,CuType> mMutVariables;
+	final static CuContext Empty=new CuContext();
 	
 	public CuContext () {
-		this.mClasses = new HashMap<String,ClsContextEle>();
-		this.kc = new ArrayList<String>();
+		this.mClasses = new HashMap<String,CuClass>();
+		this.mKind = new ArrayList<String>();
 		this.mFunctions = new HashMap<String,CuTypeScheme>();
 		//mVariable are the immutable variables
 		this.mVariables = new HashMap<String,CuType>();
@@ -25,8 +26,8 @@ public class CuContext {
 	}
 	//copy constructor
 	public CuContext (CuContext context) {
-		this.mClasses = new HashMap<String,ClsContextEle>(context.mClasses);
-		this.kc = new ArrayList<String>(context.kc);
+		this.mClasses = new HashMap<String,CuClass>(context.mClasses);
+		this.mKind = new ArrayList<String>(context.mKind);
 		this.mFunctions = new HashMap<String,CuTypeScheme>(context.mFunctions);
 		//mVariable are the immutable variables
 		this.mVariables = new HashMap<String,CuType>(context.mVariables);
@@ -34,6 +35,8 @@ public class CuContext {
 		this.mMutVariables = new HashMap<String,CuType>(context.mMutVariables);
 	}
 
+
+	public void updateKind(String name){ mKind.add(name); }
 	public CuType getVariable(String name) { return mVariables.get(name); }
 	public CuType getMutVariable(String name) { return mMutVariables.get(name); }
 	public CuTypeScheme getFunction(String name) { return mFunctions.get(name); }
@@ -42,8 +45,9 @@ public class CuContext {
 	public void updateFunction(String name, CuTypeScheme value){ mFunctions.put(name, value);}
 	public boolean inVar (String name) {return this.mVariables.containsKey(name); }
 	public boolean inMutVar (String name) {return this.mMutVariables.containsKey(name); }
+
+	public List<String> getKindList() { return mKind; }
 	
-	public ClsContextEle getClass(String name) { return mClasses.get(name); }
 	
 	//this function merges the mutable variables to immutable variables
 	//this function is created because a lot of times we don't need to distinguish immutable variables
@@ -68,14 +72,47 @@ public class CuContext {
     }
     //check if this type parameter is in kind context
     public boolean hasVTypePara(String name) {
-    	return this.kc.contains(name);
+    	return this.mKind.contains(name);
     }
     public void updateKc(List<String> kc) {
-    	this.kc.addAll(kc);
+    	this.mKind.addAll(kc);
     }
     public void updateMutType(Map<String,CuType> mutVar){ mMutVariables.putAll(mutVar);}
+    
+    
+    private void init(){
+    	//=====Class init==========
+    	List<String> tempforIterInit=new ArrayList<String>();
+    	tempforIterInit.add("E");
+		this.mClasses.put("Iterable", new VIterable(tempforIterInit));
+		this.mClasses.put("Boolean", new VBoolean());
+		this.mClasses.put("Integer", new VInteger());
+		this.mClasses.put("Charater", new VCharacter());
+		this.mClasses.put("String", new VString());
+		
+		//=====Function init=======
+		//character
+		HashMap<CuVvc, CuType> tempclassmapForCharFun = new HashMap<CuVvc, CuType>();
+		//tempclassmapForChar.put(new Vv("unicode"),new VClass("Character",new ArrayList<CuType>());
+		//CuFun chararcterFun= new Function(new Vv("character"),
+		//public TypeScheme(List<String> kc, Map<String, CuType> tc , CuType t){
+		//VClass(String s, List<CuType> pt, Boolean intf)
+		/*TypeScheme chararcterFunTemp = new TypeScheme(new ArrayList<String>(),
+				new HashMap<String,CuType>(){{put("unicode", new );}}, 
+							tempclassmapForCharFun, 
+							new VClass("Character",new ArrayList<CuType>()),
+				  new EmptyBody()); 
+		);*/
+		//string
+
+		//private Map<String,CuTypeScheme> mFunctions;
+		//mFunctions.put("character", chararcterFunTemp);
+		//=====Type init===========
+		
+	}
 }
 
+    /*
 class ClsContextEle {
 	String keyword;
 	//class/interface names
@@ -92,3 +129,4 @@ class ClsContextEle {
 		this.mFunctions = new HashMap<String, CuTypeScheme>();
 	}
 }
+	*/

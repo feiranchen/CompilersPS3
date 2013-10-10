@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ public abstract class CuClass {
 		return text;
 	}
 	public void add(List<CuExpr> s) {}
-	public void add(CuType t) {}
+	public void addSuper(CuType t) {}
 	public void add(CuStat s) {}
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
@@ -19,30 +20,43 @@ public abstract class CuClass {
 }
 
 class Cls extends CuClass {
-	//we need its superType for subtyping
-	CuType superType;
-	//class name
-	String clsintf;
+	String name;
+	CuType superType=new Top();
+	CuContext cTxt= new CuContext();
+	List<CuStat> classStatement = new ArrayList<CuStat>();
+	List<CuExpr> superArg;
+	
+	Map<String, CuFun> funList= new HashMap<String, CuFun>(); 
+	
+	
+	//=======Feiran doesn't think the following is good style. Let's see.
 	//kind context theta
-	List<String> kc;
+//	List<String> kindCtxt;
 	//type context gamma
-	Map<CuVvc, CuType> tc;
+//	Map<CuVvc, CuType> typeCtxt;
+//	Map<Vv, CuFun>      funCtxt;
+	
+	
+	
+	//kind context theta
+	//List<String> kc;
+	//type context gamma
+	//Map<CuVvc, CuType> tc;
 	//function context for method lookup, we don't need the following 
 	//statement for this purpose
-	CuFunC functxt;
+	//CuFunC functxt;
 	
-	List<CuStat> classStatement = new ArrayList<CuStat>();
-	List<CuExpr> es;
-	List<String> fun = new ArrayList<String>();
-	List<Function> functions=new ArrayList<Function>();
+	//=============================
 	
-	
-	public Cls(CuVvc clsintf, List<String> kc, Map<CuVvc, CuType> tc2) {
-		this.clsintf = clsintf.toString();
-		this.kc = kc;
-		this.tc = tc2;
+	public Cls(String clsintf, List<String> kc, Map<String, CuType> tc, CuContext outsideCtxt) {
+		name=clsintf;
+		cTxt=outsideCtxt;
+		for (String s : kc) {cTxt.updateKind(s); }
+		for (Map.Entry<String, CuType> e : tc.entrySet()) { 
+			cTxt.updateType(e.getKey(), e.getValue());
+		}
 	}
-	@Override public void add (CuType t) {
+	@Override public void addSuper (CuType t) {
 		superType = t;
 	}
 	
@@ -51,21 +65,27 @@ class Cls extends CuClass {
 	}
 	
 	@Override public void add (List<CuExpr> s) {
-		es = s;
+		superArg = s;
+		//add super length type check here.
+		//add mapping to context here
+		//for (CuExpr ex : s){
+		//	cTxt.updateMutType(name, value)
+		//}
 	}
 	
 	@Override public void add(CuVvc v, CuTypeScheme ts, CuStat s) {
-		functxt.add(v, ts);
-		String t = String.format("fun %s %s %s", v, ts.toString(), s.toString());
-		fun.add(t);
-		functions.add(new Function(v,ts,s));
+		cTxt.updateFunction(v.toString(), ts);
+		funList.put(v.toString(),new Function(v,ts,s));
 	}
 	
+
+	/*
 	@Override public String toString() {
 		return String.format("class %s %s %s extends %s { %s super ( %s ) ; %s }", 
 				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
 				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
 	}
+	*/
 	
 	@Override public void calculateType(CuContext context) throws NoSuchTypeException {
 		
@@ -74,12 +94,14 @@ class Cls extends CuClass {
 
 class Intf extends CuClass{
 	private String intf_name;
-	private String funs = "";
 	private List<String> kc_name;
 	private CuType t;
 	private ArrayList<String> v_names = new ArrayList<String>();
 	private ArrayList<CuTypeScheme> ts_names = new ArrayList<CuTypeScheme>();
+	
 	List<Function> functions=new ArrayList<Function>();
+	private String funs = "";
+	
 	public Intf (String iname, List<String> kname){
 		intf_name = iname;
 		kc_name = kname;
@@ -90,7 +112,7 @@ class Intf extends CuClass{
 		text += " > extends";
 	}
 	@Override
-	public void add (CuType tt) {
+	public void addSuper (CuType tt) {
 		t = tt;
 		text += " " + t.toString();
 	}
@@ -111,3 +133,60 @@ class Intf extends CuClass{
 		
 	}
 }
+
+//======Class init=========
+
+class VBoolean extends Cls {
+	Boolean v=false;
+	public VBoolean() {
+		super("Boolean", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Boolean) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+
+	public boolean calculateType() { return v; }
+}
+
+class VInteger extends Cls {
+	Integer v=0;
+	public VInteger() {
+		super("Integer", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Integer) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	public VInteger calculateType() { return this; }
+}
+
+class VCharacter extends Cls {
+	Character c;
+	public VCharacter() {
+		super("Character", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof Character) { c=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	public VCharacter calculateType() { return this; }
+}
+
+class VString extends Cls {
+	String v="";
+	public VString() {
+		super("String", new ArrayList<String>(), new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof String) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+
+	public VString calculateType() { return this; }
+}
+
+
+class VIterable extends Cls {
+	List<CuType> v;
+	public VIterable(List<String> kc) {
+		super("Iterable", kc, new HashMap<String, CuType>(), CuContext.Empty);
+		//if (val instanceof List<CuType>) { v=val; }
+		//else { throw new NoSuchTypeException();}
+	}
+	
+	public VIterable calculateType() { return this; }
+}
+
