@@ -6,6 +6,11 @@ import java.util.Map;
 //Yinglei worked on the desugared program (core language), in parsing, we should
 //put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
 public abstract class CuClass {
+	String name;
+	List<String> kindCtxt;
+	CuType superType=new Top();
+	Map<String,CuTypeScheme> mFunctions = new HashMap<String,CuTypeScheme>();
+
 	protected String text = "";
 	@Override public String toString() {
 		return text;
