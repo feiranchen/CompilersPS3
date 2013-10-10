@@ -4,15 +4,15 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class CuContext {
-	private Map<String,CuClass> mClasses;
+	Map<String,CuClass> mClasses;
 	//kind context theta
-	private List<String> mKind;
+	List<String> mKind;
 	//function context is a map with name and type scheme pairs
-	private Map<String,CuTypeScheme> mFunctions;
+	Map<String,CuTypeScheme> mFunctions;
 	//mVariable are the immutable variables
-	private Map<String,CuType> mVariables;
+	Map<String,CuType> mVariables;
 	//mMutVariables are the mutable variables
-	private Map<String,CuType> mMutVariables;
+	Map<String,CuType> mMutVariables;
 	final static CuContext Empty=new CuContext();
 	
 	public CuContext () {
@@ -80,7 +80,8 @@ public class CuContext {
     public void updateMutType(Map<String,CuType> mutVar){ mMutVariables.putAll(mutVar);}
     
     
-    private void init(){
+    @SuppressWarnings("serial")
+	public void init(){
     	//=====Class init==========
     	List<String> tempforIterInit=new ArrayList<String>();
     	tempforIterInit.add("E");
@@ -92,23 +93,25 @@ public class CuContext {
 		
 		//=====Function init=======
 		//character
-		HashMap<CuVvc, CuType> tempclassmapForCharFun = new HashMap<CuVvc, CuType>();
+		
 		//tempclassmapForChar.put(new Vv("unicode"),new VClass("Character",new ArrayList<CuType>());
 		//CuFun chararcterFun= new Function(new Vv("character"),
 		//public TypeScheme(List<String> kc, Map<String, CuType> tc , CuType t){
 		//VClass(String s, List<CuType> pt, Boolean intf)
-		/*TypeScheme chararcterFunTemp = new TypeScheme(new ArrayList<String>(),
-				new HashMap<String,CuType>(){{put("unicode", new );}}, 
-							tempclassmapForCharFun, 
-							new VClass("Character",new ArrayList<CuType>()),
-				  new EmptyBody()); 
-		);*/
-		//string
-
-		//private Map<String,CuTypeScheme> mFunctions;
-		//mFunctions.put("character", chararcterFunTemp);
-		//=====Type init===========
 		
+		TypeScheme chararcterFunTemp = new TypeScheme(new ArrayList<String>(),
+				new HashMap<String,CuType>(){{put("unicode",CuType.integer);}}, 
+				CuType.character); 
+		mFunctions.put("character", chararcterFunTemp);
+		//string
+		TypeScheme stringFunTemp = new TypeScheme(new ArrayList<String>(),
+				new HashMap<String,CuType>(){{put("characters",
+						CuType.iterable(new ArrayList<CuType>(){{add(CuType.character);}}));}}, 
+				CuType.string); 
+		mFunctions.put("string", stringFunTemp);
+		
+		//=====Type init===========
+		mVariables.put("input",CuType.iterable(new ArrayList<CuType>(){{add(CuType.integer);}}));
 	}
 }
 

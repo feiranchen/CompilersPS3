@@ -12,10 +12,11 @@ import java.util.Set;
 public abstract class CuType {
 	protected static CuType top = new Top();
 	protected static CuType bottom = new Bottom();
-	protected static CuType bool = new Bool();
-	protected static CuType integer = new Int();
-	protected static CuType character = new Char();
-	protected static CuType string = new Str();
+	protected static CuType bool = new VClass("Boolean", new ArrayList<CuType>());
+	protected static CuType integer = new VClass("Integer", new ArrayList<CuType>());
+	protected static CuType character = new VClass("Character", new ArrayList<CuType>());
+	protected static CuType string = new VClass("String", new ArrayList<CuType>());
+	protected static CuType iterable(ArrayList<CuType> arg) {return new VClass("Iterable", arg);}
 	protected List<CuType> parentType;
 	protected String id;
 	protected String text = "";
@@ -95,8 +96,8 @@ public abstract class CuType {
  * determine is a class or an interface: isClassOrInterface()
  */
 class VClass extends CuType {
-	protected boolean isInterface = false;
-	public VClass(String s, List<CuType> pt, Boolean intf){
+	List<CuType> appliedTypePara=new ArrayList<CuType>();
+	public VClass(String s, List<CuType> pt){
 		super.id = s;
 		for (CuType t: pt) {
 			if (t.isTypePara()) {
@@ -105,7 +106,6 @@ class VClass extends CuType {
 				throw new NoSuchTypeException();
 			}
 		}
-		isInterface = intf;
 		super.text=super.id+ " "+ Helper.printList("<", pt, ">", ",");
 	}
 	@Override public CuType calculateType(CuContext context) {
@@ -134,8 +134,8 @@ class VClass extends CuType {
 		}
 		return this.map;
 	}
+	//TODO: change this method
 	@Override public boolean isClassOrInterface() {return true;}
-	@Override public boolean isInterface() {return isInterface;}
 	@Override public boolean isSubtypeOf(CuType that) {
 		if (this.equalsInstance(that)) return true;
 		for (CuType p : this.parentType) {
@@ -225,7 +225,7 @@ class VTypePara extends CuType {
 
 class Iter extends VClass {
 	public Iter(CuType arg) {
-		super(CuVvc.ITERABLE, new ArrayList<CuType> (), false); // id is "Iterable"
+		super(CuVvc.ITERABLE, new ArrayList<CuType> ()); // id is "Iterable"
 		super.type = arg;
 		super.text=super.id+ " <" + arg.toString()+">";
 		// set its parent types
