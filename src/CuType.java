@@ -102,7 +102,7 @@ class VClass extends CuType {
 				throw new NoSuchTypeException(); 
 		}
 		// check if class or interface
-		CuClass c = context.getClass(id);
+		CuClass c = context.mClasses.get(id);
 		if (c == null) throw new NoSuchTypeException(); 
 		if (c.isInterface()) return CuType.top;
 		else return this;
@@ -179,7 +179,7 @@ class VTypeInter extends CuType {
 			temp.remove(CuType.top);
 			if(!pAll.addAll(temp)) throw new NoSuchTypeException();
 			// all method names are distinct
-			Set<String> temp2 = context.getClass(t.id).mFunctions.keySet();
+			Set<String> temp2 = context.mClasses.get(t.id).mFunctions.keySet();
 			if(!vAll.addAll(temp2)) throw new NoSuchTypeException();
 		}
 		return parents.get(0).calculateType(context);
