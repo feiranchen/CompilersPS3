@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -168,27 +169,25 @@ class VTypeInter extends CuType {
 		super.text=t1.toString();
 	}
 	@Override public void add(CuType t) {
-		// A&B&C, only the first could be a class
-		if (!t.isInterface()) throw new NoSuchTypeException();
-		Helper.ToDo("How to type check? handle exception?");
 		parents.add(t);
 		super.text += " \u222A "+t.toString();
 	}
 	@Override public CuType calculateType(CuContext context) throws NoSuchTypeException {
 		/* type checking */
-		Helper.ToDo("v<tao1, tao2> == v<tao3, tao4>");
-		for(int i = 0; i+1 < parents.size(); i++) {
-			Helper.ToDo("requires function map id->typescheme");
-			Map<String, CuTypeScheme> f1 = context.getFunction(parents.get(i).id).getFuncMap();
-			Map<String, CuTypeScheme> f2 = context.getFunction(parents.get(i+1).id).getFuncMap();
-			Helper.ToDo("requires CuTypeScheme.equals()");
-			for (Entry<String, CuTypeScheme> f : f1.entrySet()) {
-				if(f2.containsKey(f.getKey()) && !f2.get(f.getKey()).equals(f.getValue())) {
-					throw new NoSuchTypeException(); // v:sigma , v:sigma' are not the same
-				}
-			}
+		HashSet<CuType> pAll = new HashSet<CuType>(); 
+		HashSet<String> vAll = new HashSet<String>(); 
+		for(int i = 0; i < parents.size(); i++) {
+			CuType t = parents.get(i);
+			// A & B & C..., only the first could be a class
+			if ((i > 0) && !t.calculateType(context).isTop()) throw new NoSuchTypeException();
+			// all parents are distinct except top
+			List<CuType> temp = t.parentType;
+			temp.remove(CuType.top);
+			if(!pAll.addAll(temp)) throw new NoSuchTypeException();
+			// all method names are distinct
+			Set<String> temp2 = context.getClass(t.id).mFunctions.keySet();
+			if(!vAll.addAll(temp2)) throw new NoSuchTypeException();
 		}
-		Helper.ToDo("check context, method has same typescheme");
 		return parents.get(0).calculateType(context);
 	}
 	@Override public boolean isIntersect() {return true;}
