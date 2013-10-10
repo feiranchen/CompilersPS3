@@ -23,7 +23,7 @@ public abstract class CuExpr {
 		Helper.ToDo("requires function map id->typescheme");
 		Helper.ToDo("leave this to function?");
 		// get the functions of left class
-		Map<String, CuTypeScheme> funcs = context.mClasses.get(leftId).mFunctions;
+		Map<String, CuTypeScheme> funcs = context.mClasses.get(leftId).cTxt.mFunctions;
 		// check the method typescheme
 		CuTypeScheme ts = funcs.get(methodId);
 		CuClass right = context.mClasses.get(rightId);
@@ -41,7 +41,7 @@ public abstract class CuExpr {
 		Helper.ToDo("requires function map id->typescheme");
 		Helper.ToDo("leave this to function?");
 		// get the functions of left class
-		Map<String, CuTypeScheme> funcs = context.mClasses.get(id).mFunctions;
+		Map<String, CuTypeScheme> funcs = context.mClasses.get(id).cTxt.mFunctions;
 		// check the method typescheme
 		CuTypeScheme ts = funcs.get(methodId);
 		/** if this method exists, kindcontext is <>, and type scheme is () */
@@ -384,7 +384,7 @@ class VarExpr extends CuExpr{
 	}
 	@Override protected CuType calculateType(CuContext context) {
 		CuType tHat = val.getType(context); // 1st line in Figure 5 exp
-		CuTypeScheme ts = context.mClasses.get(tHat.id).mFunctions.get(method);
+		CuTypeScheme ts = context.mClasses.get(tHat.id).cTxt.mFunctions.get(method);
 		List<CuType> tList = new ArrayList<CuType>();
 		for (String s : ts.data_arg) {
 			tList.add(ts.data_tc.get(s));
@@ -414,13 +414,13 @@ class VcExp extends CuExpr {
 		// check each es 
 		List<CuType> tList = new ArrayList<CuType>();
 		for (String s : context.mClasses.get(val).fieldPara) {
-			tList.add(context.mClasses.get(val).kindPara.get(s));
+			tList.add(context.mClasses.get(val).fieldTypes.get(s));
 		}
 		for (int i = 0; i < es.size(); i++) {
 			if (!es.get(i).isTypeOf(context, tList.get(i), types))
 				throw new NoSuchTypeException();
 		}
-		return t;
+		return getClassType(context.mClasses.get(val));
 	}
 }
 
@@ -449,7 +449,7 @@ class VvExp extends CuExpr{
 		CuType t = super.getClassType(context.mClasses.get(val));
 		List<CuType> tList = new ArrayList<CuType>();
 		for (String s : context.mClasses.get(val).fieldPara) {
-			tList.add(context.mClasses.get(val).kindPara.get(s));
+			tList.add(context.mClasses.get(val).fieldTypes.get(s));
 		}
 		for (int i = 0; i < es.size(); i++) {
 			if (!es.get(i).isTypeOf(context, tList.get(i), types))
