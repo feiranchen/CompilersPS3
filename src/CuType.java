@@ -179,7 +179,7 @@ class VTypeInter extends CuType {
 			temp.remove(CuType.top);
 			if(!pAll.addAll(temp)) throw new NoSuchTypeException();
 			// all method names are distinct
-			Set<String> temp2 = context.mClasses.get(t.id).mFunctions.keySet();
+			Set<String> temp2 = context.mClasses.get(t.id).cTxt.mFunctions.keySet();
 			if(!vAll.addAll(temp2)) throw new NoSuchTypeException();
 		}
 		return parents.get(0).calculateType(context);
