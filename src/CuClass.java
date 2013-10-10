@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 //Yinglei worked on the desugared program (core language), in parsing, we should
 //put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
@@ -15,8 +16,7 @@ public abstract class CuClass {
 	List<CuStat> classStatement = new ArrayList<CuStat>();
 	HashMap<String, CuFun>  funList = new HashMap<String, CuFun>();
 	List<String>       kindPara = null;
-	List<String>      fieldPara = new ArrayList<String>();
-	Map<String, CuType> fieldTypes=new HashMap<String,CuType>();
+	Map<String, CuType> fieldTypes=new LinkedHashMap<String,CuType>();
 	
 	List<CuType> appliedTypePara=new ArrayList<CuType>();
 	public void add(List<CuExpr> s) {}
@@ -36,11 +36,10 @@ public abstract class CuClass {
 
 class Cls extends CuClass {
 	
-	public Cls(String clsintf, List<String> kc, ArrayList<String>lstFieldPara, Map<String, CuType> tc, CuContext outsideCtxt) {
+	public Cls(String clsintf, List<String> kc, Map<String, CuType> tc, CuContext outsideCtxt) {
 		name=clsintf;
 		cTxt=outsideCtxt;
 		kindPara=kc;
-		fieldPara=lstFieldPara;
 		for (String s : kc) {cTxt.updateKind(s); }
 		fieldTypes=tc;
 		cTxt.mClasses.put(name, this);

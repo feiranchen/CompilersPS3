@@ -27,7 +27,7 @@ kindcontext returns [List<String> kc]
   RANGLE)?;
 
 typecontext returns [Map<String,CuType> tc]
-: {$tc = new HashMap<String,CuType>(); }
+: {$tc = new LinkedHashMap<String,CuType>(); }
   LPAREN (VAR COLON t=type { $tc.put($VAR.text, $t.t); } 
   (COMMA VAR COLON t=type { $tc.put($VAR.text, $t.t); })*)? 
   RPAREN;
