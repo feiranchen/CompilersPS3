@@ -1,26 +1,18 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /** class declaration add type */
 public abstract class CuType {
 	protected static CuType top = new Top();
 	protected static CuType bottom = new Bottom();
-	protected static CuType bool = new Bool();
+/*	protected static CuType bool = new Bool();
 	protected static CuType integer = new Int();
 	protected static CuType character = new Char();
 	protected static CuType string = new Str();
+*/
 	protected List<CuType> parentType;
 	protected String id;
 	protected String text = "";
-	protected Map<VTypePara, CuType> map = new LinkedHashMap<VTypePara, CuType>();// plugin generic types
+	protected Map<CuType, CuType> map = new LinkedHashMap<CuType, CuType>();// typeParameter->non-generic type arguments
 	protected CuType type = bottom; // for Iterable<>
 
 	CuType(){ changeParent(top); }
@@ -36,7 +28,6 @@ public abstract class CuType {
 	public boolean isTypePara() {return false;}
 	public boolean isClassOrInterface() {return false;}
 	public boolean isIntersect() { return false;}
-	public boolean isInterface() {return false;}
 	public boolean isIterable() {return false;}
 	public boolean isString() {return false;}
 	public boolean isCharacter() {return false;}
@@ -47,8 +38,8 @@ public abstract class CuType {
 	public CuType getArgument() throws NoSuchTypeException {
 		throw new NoSuchTypeException();
 	}
-	public Map<VTypePara, CuType> plugIn(List<CuType> t) { return map;}
-	public Map<VTypePara, CuType> plugIn(Map<VTypePara, CuType> t) {return map;}
+	public Map<CuType, CuType> plugIn(List<CuType> t) { return map;}
+	public Map<CuType, CuType> plugIn(Map<CuType, CuType> t) {return map;}
 
 	// Hierarchy of types
 	public boolean equals(Object that) { return equals((CuType)that); }
@@ -97,27 +88,30 @@ public abstract class CuType {
  */
 class VClass extends CuType {
 	protected boolean isInterface = false;
-	public VClass(String s, List<CuType> pt, Boolean intf){
+	public VClass(String s, List<CuType> args){
 		super.id = s;
-		for (CuType t: pt) {
-			if (t.isTypePara()) {
-				map.put((VTypePara)t, CuType.bottom);
-			}else { // type in argument must be type parameter
-				throw new NoSuchTypeException();
-			}
+		for (CuType t : args) {
+			map.put(t, CuType.bottom); // type parameter is mapped to bottom initially
 		}
-		isInterface = intf;
-		super.text=super.id+ " "+ Helper.printList("<", pt, ">", ",");
+		super.text=super.id+ " "+ Helper.printList("<", args, ">", ",");
 	}
 	@Override public CuType calculateType(CuContext context) {
-		if (this.isInterface()) return CuType.top;
+		// type in argument must be type parameter, mapped args must be in scope
+		for (Entry<CuType, CuType> m: map.entrySet()) {
+			if (!m.getKey().isTypePara() || context.getVariable(m.getValue().id) == null) 
+				throw new NoSuchTypeException(); 
+		}
+		// check if class or interface
+		CuClass c = context.getClass(id);
+		if (c == null) throw new NoSuchTypeException(); 
+		if (c.isInterface()) return CuType.top;
 		else return this;
 	}
 	/* instantiate this class, strict plug in */
-	@Override public Map<VTypePara, CuType> plugIn(List<CuType> t) {
+	@Override public Map<CuType, CuType> plugIn(List<CuType> t) {
 		if(map.size() != t.size()) {throw new NoSuchTypeException();}
 		int i = 0;
-		for (Entry<VTypePara, CuType> k : map.entrySet()) {
+		for (Entry<CuType, CuType> k : map.entrySet()) {
 			if(t.get(i).isTypePara()) {
 				throw new NoSuchTypeException();
 			}
@@ -126,9 +120,9 @@ class VClass extends CuType {
 		}
 		return this.map;
 	}
-	@Override public Map<VTypePara, CuType> plugIn(Map<VTypePara, CuType> t) {
-		for (Entry<VTypePara, CuType> p : t.entrySet()) {
-			VTypePara k = p.getKey();
+	@Override public Map<CuType, CuType> plugIn(Map<CuType, CuType> t) {
+		for (Entry<CuType, CuType> p : t.entrySet()) {
+			CuType k = p.getKey();
 			if (map.containsKey(k)) {
 				map.put(k, p.getValue());// only plugin valid keys
 			}
@@ -136,7 +130,6 @@ class VClass extends CuType {
 		return this.map;
 	}
 	@Override public boolean isClassOrInterface() {return true;}
-	@Override public boolean isInterface() {return isInterface;}
 	@Override public boolean isSubtypeOf(CuType that) {
 		if (this.equalsInstance(that)) return true;
 		for (CuType p : this.parentType) {
@@ -150,8 +143,8 @@ class VClass extends CuType {
 	@Override public boolean equals(CuType that) {
 		if(that.isClassOrInterface()) {
 			VClass t = (VClass) that;
-			Set<VTypePara> tp1 = this.map.keySet();
-			Set<VTypePara> tp2 = t.map.keySet();
+			Set<CuType> tp1 = this.map.keySet();
+			Set<CuType> tp2 = t.map.keySet();
 			return super.id.equals(t.id) && tp1.equals(tp2);
 		}
 		return false;
@@ -224,7 +217,7 @@ class VTypePara extends CuType {
 
 class Iter extends VClass {
 	public Iter(CuType arg) {
-		super(CuVvc.ITERABLE, new ArrayList<CuType> (), false); // id is "Iterable"
+		super(CuVvc.ITERABLE, new ArrayList<CuType> ()); // id is "Iterable"
 		super.type = arg;
 		super.text=super.id+ " <" + arg.toString()+">";
 		// set its parent types
