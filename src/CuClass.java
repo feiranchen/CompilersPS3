@@ -6,13 +6,9 @@ import java.util.Map;
 //Yinglei worked on the desugared program (core language), in parsing, we should
 //put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
 public abstract class CuClass {
-	String name;
-	List<String> kindCtxt;
-	CuType superType=new Top();
-	Map<String,CuTypeScheme> mFunctions = new HashMap<String,CuTypeScheme>();
-
 	protected String text = "";
 	Map<String, CuFun> funList= new HashMap<String, CuFun>();
+	List<String> kindPara=null;
 	
 	List<CuType> appliedTypePara=new ArrayList<CuType>();
 	public void add(List<CuExpr> s) {}
@@ -34,7 +30,6 @@ class Cls extends CuClass {
 	String name;
 	CuType superType=new Top();
 	CuContext cTxt= new CuContext();
-	List<String> kindPara=new ArrayList<String>();
 	
 	List<CuStat> classStatement = new ArrayList<CuStat>();
 	List<CuExpr> superArg;
@@ -74,7 +69,6 @@ class Cls extends CuClass {
 		funList.put(v.toString(),new Function(v,ts,s));
 	}
 	
-
 	@Override public CuClass calculateType(CuContext context) throws NoSuchTypeException { 
 		
 		return this;
@@ -121,11 +115,9 @@ class Intf extends CuClass{
 				cTxt.mClasses.containsKey(tt.id)){
 			Map<String, CuFun> cTxt.mClasses.get(tt.id).funList;
 		}
-		else if(tt instanceof VClass) {
-			
-		}
 		else if(tt instanceof VTypeInter) {
-			
+			tt=(VTypeInter)tt;
+		    
 		}
 		else if(tt instanceof VTypePara) {
 			
