@@ -5,6 +5,7 @@ import java.util.Map;
 public abstract class CuTypeScheme {
 	protected String text = "";
 	List<String>        data_kc;
+	List<String>        data_arg;
 	Map<String, CuType>  data_tc;
 	CuType              data_t;
 	@Override public String toString() {
@@ -14,8 +15,9 @@ public abstract class CuTypeScheme {
 }
 
 class TypeScheme extends CuTypeScheme {
-	public TypeScheme(List<String> kc, Map<String, CuType> tc , CuType t){
+	public TypeScheme(List<String> kc, List<String>lstArg, Map<String, CuType> tc , CuType t){
 		super.data_kc=kc;
+		super.data_arg=lstArg;
 		super.data_tc=tc;
 		super.data_t=t;
 		super.text=Helper.printList("<", data_kc, ">", ",")+" "+Helper.printMap("(", data_tc, ")", ",")+" : "+t.toString();

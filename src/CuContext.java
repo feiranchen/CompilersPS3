@@ -45,8 +45,6 @@ public class CuContext {
 	public void updateFunction(String name, CuTypeScheme value){ mFunctions.put(name, value);}
 	public boolean inVar (String name) {return this.mVariables.containsKey(name); }
 	public boolean inMutVar (String name) {return this.mMutVariables.containsKey(name); }
-
-	public List<String> getKindList() { return mKind; }
 	
 	
 	//this function merges the mutable variables to immutable variables
