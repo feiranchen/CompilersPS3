@@ -17,7 +17,7 @@ public abstract class CuType {
 	protected static CuType integer = new VClass("Integer", new ArrayList<CuType>());
 	protected static CuType character = new VClass("Character", new ArrayList<CuType>());
 	protected static CuType string = new VClass("String", new ArrayList<CuType>());
-	protected static CuType iterable(ArrayList<CuType> arg) {return new VClass("Iterable", arg);}
+	protected static CuType iterable(CuType arg) {return new Iter(arg);}
 	protected List<CuType> parentType;
 	protected String id;
 	protected String text = "";

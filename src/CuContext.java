@@ -105,13 +105,12 @@ public class CuContext {
 		mFunctions.put("character", chararcterFunTemp);
 		//string
 		TypeScheme stringFunTemp = new TypeScheme(new ArrayList<String>(),
-				new HashMap<String,CuType>(){{put("characters",
-						CuType.iterable(new ArrayList<CuType>(){{add(CuType.character);}}));}}, 
+				new HashMap<String,CuType>(){{put("characters",CuType.iterable(CuType.character));}}, 
 				CuType.string); 
 		mFunctions.put("string", stringFunTemp);
 		
 		//=====Type init===========
-		mVariables.put("input",CuType.iterable(new ArrayList<CuType>(){{add(CuType.integer);}}));
+		mVariables.put("input",CuType.iterable(CuType.integer));
 	}
 }
 
