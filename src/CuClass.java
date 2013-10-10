@@ -7,8 +7,16 @@ import java.util.Map;
 //put any implementation in interface to class, and this is done in parsing, probably haven't done it yet
 public abstract class CuClass {
 	protected String text = "";
-	Map<String, CuFun> funList= new HashMap<String, CuFun>();
-	List<String> kindPara=null;
+
+	String name;
+	CuType            superType = new Top();
+	CuContext               cTxt= new CuContext();
+	List<CuStat> classStatement = new ArrayList<CuStat>();
+	Map<String, CuFun> funList  = new HashMap<String, CuFun>();
+	List<String>       kindPara = null;
+	List<String>      fieldPara = new ArrayList<String>();
+	List<CuExpr> superArg;
+	Map<String, CuType> fieldTypes=new HashMap<String,CuType>();
 	
 	List<CuType> appliedTypePara=new ArrayList<CuType>();
 	public void add(List<CuExpr> s) {}
@@ -27,14 +35,6 @@ public abstract class CuClass {
 }
 
 class Cls extends CuClass {
-	String name;
-	CuType superType=new Top();
-	CuContext cTxt= new CuContext();
-	
-	List<CuStat> classStatement = new ArrayList<CuStat>();
-	List<CuExpr> superArg;
-	Map<String, CuType> fieldTypes=new HashMap<String,CuType>();
-	List<String>         fieldPara=new ArrayList<String>();
 	
 	public Cls(String clsintf, List<String> kc, ArrayList<String>lstFieldPara, Map<String, CuType> tc, CuContext outsideCtxt) {
 		name=clsintf;
@@ -87,11 +87,6 @@ class Cls extends CuClass {
 }
 
 class Intf extends CuClass{
-	String name;
-	CuType superType=new Top();
-	CuContext cTxt= new CuContext();
-	List<String> kindPara=new ArrayList<String>();
-	List<CuStat> classStatement = new ArrayList<CuStat>();
 	
 	public Intf (String iname, List<String> kname, CuContext outsideCtxt){
 		name = iname;
