@@ -10,47 +10,32 @@ public abstract class CuClass {
 	@Override public String toString() {
 		return text;
 	}
+
+	List<CuType> appliedTypePara=new ArrayList<CuType>();
 	public void add(List<CuExpr> s) {}
 	public void addSuper(CuType t) {}
 	public void add(CuStat s) {}
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
 	public void add(CuVvc v_name, CuTypeScheme ts) {}
-	public void calculateType(CuContext context) throws NoSuchTypeException {}
+	public boolean isInterface() {return false; }
+	public CuClass calculateType(CuContext context) throws NoSuchTypeException { return this;}
 }
 
 class Cls extends CuClass {
 	String name;
 	CuType superType=new Top();
 	CuContext cTxt= new CuContext();
+	List<String> kindPara=new ArrayList<String>();
 	List<CuStat> classStatement = new ArrayList<CuStat>();
 	List<CuExpr> superArg;
 	
-	Map<String, CuFun> funList= new HashMap<String, CuFun>(); 
-	
-	
-	//=======Feiran doesn't think the following is good style. Let's see.
-	//kind context theta
-//	List<String> kindCtxt;
-	//type context gamma
-//	Map<CuVvc, CuType> typeCtxt;
-//	Map<Vv, CuFun>      funCtxt;
-	
-	
-	
-	//kind context theta
-	//List<String> kc;
-	//type context gamma
-	//Map<CuVvc, CuType> tc;
-	//function context for method lookup, we don't need the following 
-	//statement for this purpose
-	//CuFunC functxt;
-	
-	//=============================
+	Map<String, CuFun> funList= new HashMap<String, CuFun>();
 	
 	public Cls(String clsintf, List<String> kc, Map<String, CuType> tc, CuContext outsideCtxt) {
 		name=clsintf;
 		cTxt=outsideCtxt;
+		kindPara=kc;
 		for (String s : kc) {cTxt.updateKind(s); }
 		for (Map.Entry<String, CuType> e : tc.entrySet()) { 
 			cTxt.updateType(e.getKey(), e.getValue());
@@ -87,9 +72,6 @@ class Cls extends CuClass {
 	}
 	*/
 	
-	@Override public void calculateType(CuContext context) throws NoSuchTypeException {
-		
-	}
 }
 
 class Intf extends CuClass{
@@ -128,10 +110,12 @@ class Intf extends CuClass{
 		text += " { " + funs + " } ";
 		return text;
 	}
-	public void calculateType(CuContext context) throws NoSuchTypeException {
+	@Override public CuClass calculateType(CuContext context) throws NoSuchTypeException {
 		Helper.ToDo("make sure that the type check returns its constructable component or null");
-		
+		return this;
 	}
+
+	@Override public boolean isInterface() {return true; }
 }
 
 //======Class init=========

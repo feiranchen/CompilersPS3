@@ -1,14 +1,15 @@
 import java.util.*;
+import java.util.Map.Entry;
 
 /** class declaration add type */
 public abstract class CuType {
 	protected static CuType top = new Top();
 	protected static CuType bottom = new Bottom();
-/*	protected static CuType bool = new Bool();
-	protected static CuType integer = new Int();
-	protected static CuType character = new Char();
-	protected static CuType string = new Str();
-*/
+	protected static CuType bool = new VClass("Boolean", new ArrayList<CuType>());
+	protected static CuType integer = new VClass("Integer", new ArrayList<CuType>());
+	protected static CuType character = new VClass("Character", new ArrayList<CuType>());
+	protected static CuType string = new VClass("String", new ArrayList<CuType>());
+	protected static CuType iterable(ArrayList<CuType> arg) {return new VClass("Iterable", arg);}
 	protected List<CuType> parentType;
 	protected String id;
 	protected String text = "";
@@ -87,7 +88,6 @@ public abstract class CuType {
  * determine is a class or an interface: isClassOrInterface()
  */
 class VClass extends CuType {
-	protected boolean isInterface = false;
 	public VClass(String s, List<CuType> args){
 		super.id = s;
 		for (CuType t : args) {
@@ -129,6 +129,7 @@ class VClass extends CuType {
 		}
 		return this.map;
 	}
+	//TODO: change this method
 	@Override public boolean isClassOrInterface() {return true;}
 	@Override public boolean isSubtypeOf(CuType that) {
 		if (this.equalsInstance(that)) return true;
