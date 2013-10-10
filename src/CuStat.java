@@ -192,7 +192,6 @@ class WhileStat extends CuStat{
     }
 }
 
-//Yinglei doesn't think this will be used, correct her if wrong
 class EmptyBody extends CuStat {
 	public EmptyBody(){
 		text=" ;";

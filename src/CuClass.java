@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,7 @@ public abstract class CuClass {
 		return text;
 	}
 	public void add(List<CuExpr> s) {}
-	public void add(CuType t) {}
+	public void addSuper(CuType t) {}
 	public void add(CuStat s) {}
 	public void add(CuVvc v, CuTypeScheme ts, CuStat s) {}
 	public void add(String v_name, CuTypeScheme ts) {}
@@ -17,30 +18,43 @@ public abstract class CuClass {
 }
 
 class Cls extends CuClass {
-	//we need its superType for subtyping
+	String name;
 	CuType superType;
-	//class name
-	String clsintf;
+	CuContext cTxt= new CuContext();
+	List<CuStat> classStatement = new ArrayList<CuStat>();
+	List<CuExpr> superArg;
+	
+	Map<String, CuFun> funList= new HashMap<String, CuFun>(); 
+	
+	
+	//=======Feiran doesn't think the following is good style. Let's see.
 	//kind context theta
-	List<String> kc;
+//	List<String> kindCtxt;
 	//type context gamma
-	Map<CuVvc, CuType> tc;
+//	Map<CuVvc, CuType> typeCtxt;
+//	Map<Vv, CuFun>      funCtxt;
+	
+	
+	
+	//kind context theta
+	//List<String> kc;
+	//type context gamma
+	//Map<CuVvc, CuType> tc;
 	//function context for method lookup, we don't need the following 
 	//statement for this purpose
-	CuFunC functxt;
+	//CuFunC functxt;
 	
-	List<CuStat> classStatement = new ArrayList<CuStat>();
-	List<CuExpr> es;
-	List<String> fun = new ArrayList<String>();
-	List<Function> functions=new ArrayList<Function>();
+	//=============================
 	
-	
-	public Cls(CuVvc clsintf, List<String> kc, Map<CuVvc, CuType> tc2) {
-		this.clsintf = clsintf.toString();
-		this.kc = kc;
-		this.tc = tc2;
+	public Cls(String clsintf, List<String> kc, Map<String, CuType> tc, CuContext outsideCtxt) {
+		name=clsintf;
+		cTxt=outsideCtxt;
+		for (String s : kc) {cTxt.updateKind(s); }
+		for (Map.Entry<String, CuType> e : tc.entrySet()) { 
+			cTxt.updateType(e.getKey(), e.getValue());
+		}
 	}
-	@Override public void add (CuType t) {
+	@Override public void addSuper (CuType t) {
 		superType = t;
 	}
 	
@@ -49,20 +63,23 @@ class Cls extends CuClass {
 	}
 	
 	@Override public void add (List<CuExpr> s) {
-		es = s;
+		superArg = s;
+		//add super length type check here.
+		//add mapping to context here
+		//for (CuExpr ex : s){
+		//	cTxt.updateMutType(name, value)
+		//}
 	}
 	
 	@Override public void add(CuVvc v, CuTypeScheme ts, CuStat s) {
-		functxt.add(v, ts);
-		String t = String.format("fun %s %s %s", v, ts.toString(), s.toString());
-		fun.add(t);
-		functions.add(new Function(v,ts,s));
+		cTxt.updateFunction(v.toString(), ts);
+		funList.put(v.toString(),new Function(v,ts,s));
 	}
 	
 	@Override public String toString() {
 		return String.format("class %s %s %s extends %s { %s super ( %s ) ; %s }", 
-				clsintf, Helper.printList("<", kc, ">", ","), Helper.printMap("(", tc, ")", ","), superType.toString(), 
-				Helper.printList("", classStatement, "", ""), Helper.printList("(", es, ")", ","), Helper.printList("", fun, "", ""));
+				name, Helper.printList("<", cTxt.getKindList(), ">", ","), /*Helper.printMap("(", tc, ")", ","), */superType.toString(), 
+				Helper.printList("", classStatement, "", ""), Helper.printList("(", superArg, ")", ","));
 	}
 }
 
@@ -86,7 +103,7 @@ class Intf extends CuClass{
 		text += " > extends";
 	}
 	@Override
-	public void add (CuType tt) {
+	public void addSuper (CuType tt) {
 		t = tt;
 		text += " " + t.toString();
 	}

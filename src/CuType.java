@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class CuType {
@@ -15,21 +17,44 @@ public abstract class CuType {
 	}
 	
 	
-	//public boolean equals(Object that) { return equals((XiType)that); }
-	//public boolean equals(XiType that) { return this == that; }
-	//public boolean isSubtypeOf(XiType that) { return equals(that); }
+	//public boolean equals(Object that) { return equals((CuType)that); }
+	//public boolean equals(CuType that) { return this == that; }
+	//public boolean isSubtypeOf(CuType that) { return equals(that); }
+/*
+	private static CuType mBoolean = new VBoolean();
+	public static CuType getBool() { return mBoolean; }
+	private static CuType mInteger = new VInteger();
+	public static CuType getInt() { return mInteger; }
+	private static CuType mCharacter = new VCharacter();
+	public static CuType getCharacter() { return mCharacter; }
+	private static CuType mString = new VString();
+	public static CuType getString() { return mString; }
+	private static Map<List<CuType>,CuType> mIterable = new IdentityHashMap<List<CuType>,CuType>();
+	public static CuType getIterable(List<CuType> elemType) {
+		CuType iter = mIterable.get(elemType);
+		if (iter == null) {
+			iter = new VIterable(elemType);
+			mIterable.put(elemType, iter);
+		}
+		return iter;
+	}
+	*/
 
-	public boolean isBool() { return false; }
-	public boolean isInt() { return false; }
-	public boolean isArray() { return false; }
+	
+	public boolean isBoolean() { return false; }
+	public boolean isInteger() { return false; }
+	public boolean isCharacter() { return false; }
+	public boolean isString() { return false; }
+	public boolean isIterable() { return false; }
 	
 }
 
 class VClass extends CuType {
-	
-	public VClass(String s, List<CuType> pt){
+	CuClass classData;
+	public VClass(String s, List<CuType> pt, CuClass referClass){
 		super.data_s=s;
 		super.pt = pt;
+		classData=referClass;
 		super.text=data_s+ " "+ Helper.printList("<", pt, ">", ",");
 	}
 }
@@ -60,27 +85,3 @@ class VTypePara extends CuType {
 	}
 }
 
-//==============Basic Types==================
-class VBool extends VClass {
-	public VBool(String s, List<CuType> pt) {
-		super("Boolean", new ArrayList<CuType>());
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override public boolean isBool() { return true; }
-}
-
-class VInt extends VClass {
-	public VInt(String s, List<CuType> pt) {
-		super("Integer", new ArrayList<CuType>());
-	}
-	@Override public boolean isInt() { return true; }
-}
-
-class XiArray extends VClass {
-	private XiType mElemType;
-	public XiArray(XiType elemType) { mElemType = elemType; }
-	public boolean isArray() { return true; }
-	public XiType getArrayArgument() throws NoSuchTypeException {
-		return mElemType;
-	}
